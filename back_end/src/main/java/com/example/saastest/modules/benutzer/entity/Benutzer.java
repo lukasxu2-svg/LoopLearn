@@ -1,10 +1,7 @@
 package com.example.saastest.modules.benutzer.entity;
 
 import com.example.saastest.modules.subscription.enums.SubscriptionType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
 
@@ -16,15 +13,15 @@ public class Benutzer {
     private Integer id;
 
     @NotBlank(message = "Name is required")
-    @Size(max = 10)
+    @Size(max = 30)
     private String name;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
     private String email;
 
-    @NotNull(message = "Subscription Type is required")
-    private SubscriptionType subType;
+    @Enumerated(EnumType.STRING)
+    private SubscriptionType subType = SubscriptionType.NONE;
 
 
     public Integer getId() {

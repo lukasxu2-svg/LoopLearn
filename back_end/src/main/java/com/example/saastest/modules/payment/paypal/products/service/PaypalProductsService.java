@@ -1,8 +1,8 @@
 package com.example.saastest.modules.payment.paypal.products.service;
 
 import com.example.saastest.modules.payment.paypal.auth.service.PaypalTokenService;
-import com.example.saastest.modules.payment.paypal.products.create.dto.CreateOrderResponseBody;
-import com.example.saastest.modules.payment.paypal.products.create.dto.CreateProductRequestBody;
+import com.example.saastest.modules.payment.paypal.products.dto.request.CreateProductRequestBody;
+import com.example.saastest.modules.payment.paypal.products.dto.response.CreateProductResponseBody;
 import com.example.saastest.modules.payment.paypal.products.dto.response.GetProductsResponseBody;
 import com.example.saastest.modules.payment.service.BaseService;
 import org.springframework.http.HttpHeaders;
@@ -29,7 +29,7 @@ public class PaypalProductsService extends BaseService {
         return get(uri, headers, GetProductsResponseBody.class);
     }
 
-    public CreateOrderResponseBody createProduct(CreateProductRequestBody requestBody) {
+    public CreateProductResponseBody createProduct(CreateProductRequestBody requestBody) {
         String uri = baseSandboxUrl + "/v1/catalogs/products";
 
         HttpHeaders headers = new HttpHeaders();
@@ -38,7 +38,7 @@ public class PaypalProductsService extends BaseService {
         headers.set("PayPal-Request-Id", "PRODUCT-" + UUID.randomUUID());
         headers.set("Prefer", "return=representation");
 
-        return post(uri, headers, requestBody, CreateOrderResponseBody.class);
+        return post(uri, headers, requestBody, CreateProductResponseBody.class);
     }
 
 }

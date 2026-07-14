@@ -1,7 +1,7 @@
 package com.example.saastest.modules.payment.paypal.products.controller;
 
-import com.example.saastest.modules.payment.paypal.products.create.dto.CreateOrderResponseBody;
-import com.example.saastest.modules.payment.paypal.products.create.dto.CreateProductRequestBody;
+import com.example.saastest.modules.payment.paypal.products.dto.request.CreateProductRequestBody;
+import com.example.saastest.modules.payment.paypal.products.dto.response.CreateProductResponseBody;
 import com.example.saastest.modules.payment.paypal.products.dto.response.GetProductsResponseBody;
 import com.example.saastest.modules.payment.paypal.products.service.PaypalProductsService;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +17,7 @@ public class PaypalProductsController {
     }
 
     @PostMapping
-    public CreateOrderResponseBody createProduct(@RequestBody CreateProductRequestBody requestBody) {
+    public CreateProductResponseBody createProduct(@RequestBody CreateProductRequestBody requestBody) {
         return service.createProduct(requestBody);
     }
 
