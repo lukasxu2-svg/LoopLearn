@@ -1,6 +1,5 @@
 package com.example.saastest.modules.auth.service;
 
-import com.example.saastest.modules.benutzer.entity.Benutzer;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
