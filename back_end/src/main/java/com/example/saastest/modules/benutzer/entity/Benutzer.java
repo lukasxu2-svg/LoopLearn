@@ -12,47 +12,55 @@ public class Benutzer {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @NotBlank(message = "Name is required")
+    @NotBlank(message = "First name is required")
     @Size(max = 30)
-    private String name;
+    private String firstname;
+
+    @NotBlank(message = "Last name is required")
+    @Size(max = 30)
+    private String lastname;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
     private String email;
 
+    @NotBlank
+    private String password;
+
     @Enumerated(EnumType.STRING)
     private SubscriptionType subType = SubscriptionType.NONE;
 
+    public Benutzer() {
+    }
+
+    public Benutzer(String firstname, String lastname, String email, String password) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.password = password;
+    }
 
     public Integer getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstname() {
+        return firstname;
     }
 
     public SubscriptionType getSubType() {
         return subType;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setSubType(SubscriptionType subType) {
-        this.subType = subType;
-    }
-
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public String getPassword() {
+        return password;
+    }
+
+    public String getLastname() {
+        return lastname;
     }
 }
