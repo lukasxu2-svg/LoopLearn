@@ -1,6 +1,6 @@
 package com.example.saastest.modules.payment.paypal.subscriptions.dto.enums;
 
-public enum SubscriptionUpdateOperation {
+public enum SubscriptionUpdateOperationDto {
     add,
     remove,
     replace,

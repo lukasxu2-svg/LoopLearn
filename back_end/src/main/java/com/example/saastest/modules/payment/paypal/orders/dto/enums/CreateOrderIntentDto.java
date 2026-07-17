@@ -1,6 +1,6 @@
 package com.example.saastest.modules.payment.paypal.orders.dto.enums;
 
-public enum CreateOrderIntent {
+public enum CreateOrderIntentDto {
     CAPTURE,
     AUTHORIZE
 }

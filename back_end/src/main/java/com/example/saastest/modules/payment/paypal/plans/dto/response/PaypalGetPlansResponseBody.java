@@ -1,11 +1,11 @@
 package com.example.saastest.modules.payment.paypal.plans.dto.response;
 
-import com.example.saastest.modules.payment.paypal.dto.Link;
-import com.example.saastest.modules.payment.paypal.plans.dto.Plan;
+import com.example.saastest.modules.payment.paypal.dto.LinkDto;
+import com.example.saastest.modules.payment.paypal.plans.dto.PlanDto;
 
 import java.util.List;
 
 public record PaypalGetPlansResponseBody(
-        List<Plan> plans,
-        List<Link> links) {
+                List<PlanDto> plans,
+                List<LinkDto> links) {
 }

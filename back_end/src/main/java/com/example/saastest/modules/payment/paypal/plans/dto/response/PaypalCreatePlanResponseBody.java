@@ -1,36 +1,36 @@
 package com.example.saastest.modules.payment.paypal.plans.dto.response;
 
-import com.example.saastest.modules.payment.paypal.dto.Link;
-import com.example.saastest.modules.payment.paypal.dto.Taxes;
-import com.example.saastest.modules.payment.paypal.plans.dto.enums.PlanStatus;
-import com.example.saastest.modules.payment.paypal.plans.dto.BillingCycle;
+import com.example.saastest.modules.payment.paypal.dto.LinkDto;
+import com.example.saastest.modules.payment.paypal.dto.TaxesDto;
+import com.example.saastest.modules.payment.paypal.plans.dto.enums.PlanStatusDto;
+import com.example.saastest.modules.payment.paypal.plans.dto.BillingCycleDto;
 import com.example.saastest.modules.payment.paypal.plans.dto.PaymentPreferences;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
 public record PaypalCreatePlanResponseBody(
-                String id,
+        String id,
 
-                @JsonProperty("product_id") String productId,
+        @JsonProperty("product_id") String productId,
 
-                String name,
+        String name,
 
-                String description,
+        String description,
 
-                PlanStatus status,
+        PlanStatusDto status,
 
-                @JsonProperty("billing_cycles") List<BillingCycle> billingCycles,
+        @JsonProperty("billing_cycles") List<BillingCycleDto> billingCycles,
 
-                @JsonProperty("payment_preferences") PaymentPreferences paymentPreferences,
+        @JsonProperty("payment_preferences") PaymentPreferences paymentPreferences,
 
-                Taxes taxes,
+        TaxesDto taxes,
 
-                @JsonProperty("create_time") String createTime,
+        @JsonProperty("create_time") String createTime,
 
-                @JsonProperty("update_time") String updateTime,
+        @JsonProperty("update_time") String updateTime,
 
-                List<Link> links
+        List<LinkDto> links
 
 ) {
 }

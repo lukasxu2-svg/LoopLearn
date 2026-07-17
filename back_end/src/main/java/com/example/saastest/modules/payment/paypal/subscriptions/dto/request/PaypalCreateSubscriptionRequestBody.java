@@ -1,9 +1,9 @@
 package com.example.saastest.modules.payment.paypal.subscriptions.dto.request;
 
-import com.example.saastest.modules.payment.paypal.dto.Taxes;
-import com.example.saastest.modules.payment.paypal.subscriptions.dto.BillingCycle;
-import com.example.saastest.modules.payment.paypal.subscriptions.dto.PaymentPreferences;
-import com.example.saastest.modules.payment.paypal.subscriptions.dto.enums.SubscriptionStatus;
+import com.example.saastest.modules.payment.paypal.dto.TaxesDto;
+import com.example.saastest.modules.payment.paypal.subscriptions.dto.BillingCycleDto;
+import com.example.saastest.modules.payment.paypal.subscriptions.dto.PaymentPreferencesDto;
+import com.example.saastest.modules.payment.paypal.subscriptions.dto.enums.SubscriptionStatusDto;
 
 import java.util.List;
 
@@ -11,9 +11,8 @@ public record PaypalCreateSubscriptionRequestBody(
         String product_id,
         String name,
         String description,
-        SubscriptionStatus status,
-        List<BillingCycle> billing_cycles,
-        PaymentPreferences payment_preferences,
-        Taxes taxes
-) {
+        SubscriptionStatusDto status,
+        List<BillingCycleDto> billing_cycles,
+        PaymentPreferencesDto payment_preferences,
+        TaxesDto taxes) {
 }
