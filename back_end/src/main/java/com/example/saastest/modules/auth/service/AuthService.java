@@ -4,11 +4,15 @@ import com.example.saastest.modules.auth.dto.request.LoginRequestBody;
 import com.example.saastest.modules.auth.dto.request.RegisterRequestBody;
 import com.example.saastest.modules.auth.dto.response.LoginResponseBody;
 import com.example.saastest.modules.auth.dto.response.RegisterResponseBody;
+import com.example.saastest.modules.benutzer.dto.UserDto;
 import com.example.saastest.modules.benutzer.entity.Benutzer;
 import com.example.saastest.modules.benutzer.repository.BenutzerRepository;
+import com.example.saastest.modules.plan.enums.PlanType;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.time.Duration;
 
 @Service
@@ -34,13 +38,13 @@ public class AuthService {
             throw new RuntimeException("Invalid Password");
         }
 
-        String token = jwtService.generateToken(requestBody.email());
+        String token = jwtService.generateToken(benutzer.getId());
 
         return new LoginResponseBody(
+                new UserDto(benutzer.getId(), benutzer.getEmail(), benutzer.getFirstname(), benutzer.getLastname()),
                 token,
                 "Bearer",
-                refreshTimer.toSeconds()
-        );
+                refreshTimer.toSeconds());
     }
 
     public RegisterResponseBody register(RegisterRequestBody requestBody) {
@@ -49,17 +53,16 @@ public class AuthService {
         }
 
         String hashedPassword = passwordEncoder.encode(requestBody.password());
-        Benutzer benutzer = new Benutzer(requestBody.firstname(), requestBody.lastname(), requestBody.email(), hashedPassword);
+        Benutzer benutzer = new Benutzer(requestBody.firstname(), requestBody.lastname(), requestBody.email(),
+                hashedPassword, PlanType.NONE);
 
+        benutzer = benutzerRepository.save(benutzer);
 
-        benutzerRepository.save(benutzer);
-
-        String token = jwtService.generateToken(requestBody.email());
+        String token = jwtService.generateToken(benutzer.getId());
 
         return new RegisterResponseBody(
                 requestBody.email(),
                 token,
-                refreshTimer.toSeconds()
-        );
+                refreshTimer.toSeconds());
     }
 }

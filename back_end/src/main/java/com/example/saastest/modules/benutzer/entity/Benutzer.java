@@ -1,16 +1,15 @@
 package com.example.saastest.modules.benutzer.entity;
 
-import com.example.saastest.modules.subscription.enums.SubscriptionType;
+import com.example.saastest.modules.plan.enums.PlanType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-
 
 @Entity
 public class Benutzer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 
     @NotBlank(message = "First name is required")
     @Size(max = 30)
@@ -27,20 +26,23 @@ public class Benutzer {
     @NotBlank
     private String password;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private SubscriptionType subType = SubscriptionType.NONE;
+    private PlanType subType = PlanType.NONE;
 
     public Benutzer() {
     }
 
-    public Benutzer(String firstname, String lastname, String email, String password) {
+    public Benutzer(String firstname, String lastname, String email, String password,
+                    PlanType subscriptionType) {
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
         this.password = password;
+        this.subType = subscriptionType;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
@@ -48,7 +50,7 @@ public class Benutzer {
         return firstname;
     }
 
-    public SubscriptionType getSubType() {
+    public PlanType getSubType() {
         return subType;
     }
 
