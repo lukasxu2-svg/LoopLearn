@@ -1,441 +1,500 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2
+}
+
+.popupContainer {
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    animation: slideUp 0.3s ease-out;
+}
+
+.popupInnerContainer {
+    display: flex;
+    width: 100%;
+}
+
+.popupPaymentMethod {
+    width: 50%;
+    position: relative;
+    border-radius: 12px;
+    margin: 10px 10px 10px 0;
+    padding: 5px 5px 5px 0;
+
+}
+
+.popupBill {
+    width: 50%;
+    border-radius: 12px;
+    position: relative;
+    margin: 10px 0 10px 10px;
+    padding: 10px;
+    background: antiquewhite;
+}
+
+.popupBillFlex {
+    display: flex;
+    justify-content: space-between;
+}
+
+.popupBillFlex span {
+    margin: 10px;
+}
+
+.popupBillHeader {
+    margin: 0 0 50px 0;
+}
+
 .dashboard-container {
-  min-height: 100vh;
-  background: #f5f7fa;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    background: #f5f7fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .dashboard-header {
-  background: white;
-  border-bottom: 1px solid #e0e0e0;
-  padding: 20px 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+    background: white;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 20px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 
 .header-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .dashboard-header h1 {
-  margin: 0 0 5px;
-  color: #333;
-  font-size: 28px;
+    margin: 0 0 5px;
+    color: #333;
+    font-size: 28px;
 }
 
 .dashboard-header p {
-  margin: 0;
-  color: #666;
-  font-size: 14px;
+    margin: 0;
+    color: #666;
+    font-size: 14px;
 }
 
 .logout-button {
-  padding: 10px 20px;
-  background: #f44336;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
+    padding: 10px 20px;
+    background: #f44336;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
 }
 
 .logout-button:hover {
-  background: #d32f2f;
-  transform: translateY(-2px);
+    background: #d32f2f;
+    transform: translateY(-2px);
 }
 
 .dashboard-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
 }
 
 .alert {
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-weight: 500;
-  animation: slideDown 0.3s ease-out;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 500;
+    animation: slideDown 0.3s ease-out;
 }
 
 @keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .alert-error {
-  background-color: #ffebee;
-  color: #c62828;
-  border: 1px solid #ef5350;
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef5350;
 }
 
 .alert-success {
-  background-color: #e8f5e9;
-  color: #2e7d32;
-  border: 1px solid #81c784;
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #81c784;
 }
 
 .dashboard-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  font-size: 18px;
-  color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-size: 18px;
+    color: #666;
 }
 
 /* Subscription Section */
 .subscription-section {
-  margin-bottom: 50px;
+    margin-bottom: 50px;
 }
 
 .subscription-section h2 {
-  color: #333;
-  margin-bottom: 20px;
-  font-size: 22px;
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 22px;
 }
 
 .subscription-card {
-  background: white;
-  border-radius: 12px;
-  padding: 30px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 30px;
-  align-items: start;
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 30px;
+    align-items: start;
 }
 
 .subscription-info {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 25px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 25px;
 }
 
 .info-item label {
-  display: block;
-  color: #999;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  margin-bottom: 8px;
+    display: block;
+    color: #999;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 8px;
 }
 
 .info-item p {
-  margin: 0;
-  color: #333;
-  font-size: 16px;
-  font-weight: 500;
+    margin: 0;
+    color: #333;
+    font-size: 16px;
+    font-weight: 500;
 }
 
 .plan-name {
-  color: #667eea !important;
-  font-size: 18px !important;
-  font-weight: 600 !important;
+    color: #667eea !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
 }
 
 .status {
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px !important;
-  font-weight: 600;
-  width: fit-content;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px !important;
+    font-weight: 600;
+    width: fit-content;
 }
 
 .status.active {
-  background: #e8f5e9;
-  color: #2e7d32;
+    background: #e8f5e9;
+    color: #2e7d32;
 }
 
 .status.cancelled {
-  background: #ffebee;
-  color: #c62828;
+    background: #ffebee;
+    color: #c62828;
 }
 
 .status.pending {
-  background: #fff3e0;
-  color: #e65100;
+    background: #fff3e0;
+    color: #e65100;
 }
 
 .price {
-  color: #2e7d32 !important;
-  font-size: 20px !important;
+    color: #2e7d32 !important;
+    font-size: 20px !important;
 }
 
 .subscription-actions {
-  display: flex;
-  gap: 10px;
+    display: flex;
+    gap: 10px;
 }
 
 .cancel-button {
-  padding: 12px 24px;
-  background: #f44336;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  white-space: nowrap;
+    padding: 12px 24px;
+    background: #f44336;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
 }
 
 .cancel-button:hover:not(:disabled) {
-  background: #d32f2f;
-  transform: translateY(-2px);
+    background: #d32f2f;
+    transform: translateY(-2px);
 }
 
 .cancel-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .no-subscription {
-  background: white;
-  border-radius: 12px;
-  padding: 40px;
-  text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .no-subscription p {
-  margin: 0 0 10px;
-  color: #333;
-  font-size: 16px;
+    margin: 0 0 10px;
+    color: #333;
+    font-size: 16px;
 }
 
 .no-subscription .note {
-  color: #999;
-  font-size: 14px;
+    color: #999;
+    font-size: 14px;
 }
 
 /* Plans Section */
 .plans-section {
-  margin-top: 50px;
+    margin-top: 50px;
 }
 
 .plans-section h2 {
-  color: #333;
-  margin-bottom: 20px;
-  font-size: 22px;
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 22px;
 }
 
 .plans-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
 }
 
 .plan-card {
-  background: white;
-  border-radius: 12px;
-  padding: 25px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  display: flex;
-  flex-direction: column;
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
 }
 
 .plan-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
 }
 
 .plan-card h3 {
-  margin: 0 0 10px;
-  color: #333;
-  font-size: 18px;
+    margin: 0 0 10px;
+    color: #333;
+    font-size: 18px;
 }
 
 .plan-price {
-  color: #667eea;
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 10px;
+    color: #667eea;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 10px;
 }
 
 .plan-description {
-  color: #666;
-  font-size: 14px;
-  margin-bottom: 20px;
-  min-height: 40px;
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 20px;
+    min-height: 40px;
 }
 
 .plan-features {
-  list-style: none;
-  margin: 0 0 20px;
-  padding: 0;
-  flex-grow: 1;
+    list-style: none;
+    margin: 0 0 20px;
+    padding: 0;
+    flex-grow: 1;
 }
 
 .plan-features li {
-  color: #666;
-  font-size: 13px;
-  margin-bottom: 10px;
-  padding-left: 20px;
-  position: relative;
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 10px;
+    padding-left: 20px;
+    position: relative;
 }
 
 .plan-features li:before {
-  content: '✓';
-  position: absolute;
-  left: 0;
-  color: #4caf50;
-  font-weight: bold;
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #4caf50;
+    font-weight: bold;
 }
 
 .upgrade-button {
-  padding: 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.3s ease;
+    padding: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
 }
 
 .upgrade-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
 .upgrade-button:disabled {
-  background: #ccc;
-  cursor: not-allowed;
+    background: #ccc;
+    cursor: not-allowed;
 }
 
 /* Modal */
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  animation: fadeIn 0.2s ease-out;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 .modal {
-  background: white;
-  border-radius: 12px;
-  padding: 30px;
-  max-width: 400px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  animation: slideUp 0.3s ease-out;
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 400px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.3s ease-out;
 }
 
 .modal h2 {
-  margin: 0 0 15px;
-  color: #333;
-  font-size: 20px;
+    margin: 0 0 15px;
+    color: #333;
+    font-size: 20px;
 }
 
 .modal p {
-  margin: 0 0 25px;
-  color: #666;
-  font-size: 14px;
-  line-height: 1.6;
+    margin: 0 0 25px;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.6;
 }
 
 .modal-actions {
-  display: flex;
-  gap: 10px;
+    display: flex;
+    gap: 10px;
 }
 
 .modal-button {
-  flex: 1;
-  padding: 12px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.3s ease;
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
 }
 
 .modal-button.cancel {
-  background: #e0e0e0;
-  color: #333;
+    background: #e0e0e0;
+    color: #333;
 }
 
 .modal-button.cancel:hover:not(:disabled) {
-  background: #d0d0d0;
+    background: #d0d0d0;
 }
 
 .modal-button.confirm {
-  background: #f44336;
-  color: white;
+    background: #f44336;
+    color: white;
 }
 
 .modal-button.confirm:hover:not(:disabled) {
-  background: #d32f2f;
+    background: #d32f2f;
 }
 
 .modal-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .dashboard-header {
-    padding: 15px 0;
-  }
+    .dashboard-header {
+        padding: 15px 0;
+    }
 
-  .header-content {
-    flex-direction: column;
-    gap: 15px;
-    align-items: flex-start;
-  }
+    .header-content {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
 
-  .dashboard-header h1 {
-    font-size: 24px;
-  }
+    .dashboard-header h1 {
+        font-size: 24px;
+    }
 
-  .subscription-card {
-    grid-template-columns: 1fr;
-  }
+    .subscription-card {
+        grid-template-columns: 1fr;
+    }
 
-  .subscription-info {
-    grid-template-columns: repeat(2, 1fr);
-  }
+    .subscription-info {
+        grid-template-columns: repeat(2, 1fr);
+    }
 
-  .subscription-actions {
-    width: 100%;
-  }
+    .subscription-actions {
+        width: 100%;
+    }
 
-  .subscription-actions button {
-    width: 100%;
-  }
+    .subscription-actions button {
+        width: 100%;
+    }
 
-  .plans-grid {
-    grid-template-columns: 1fr;
-  }
+    .plans-grid {
+        grid-template-columns: 1fr;
+    }
 }
