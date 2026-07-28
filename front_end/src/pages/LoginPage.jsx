@@ -1,7 +1,8 @@
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import {useNavigate, Link} from 'react-router-dom'
 import {authAPI} from '../services/api.js'
 import '../styles/AuthPages.css'
+import {isTokenExpired} from "../auth/authUtils.js";
 
 function LoginPage({setIsAuthenticated}) {
     const navigate = useNavigate()
@@ -11,6 +12,12 @@ function LoginPage({setIsAuthenticated}) {
     })
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
+
+    useEffect(() => {
+        if (isTokenExpired()) {
+            localStorage.clear();
+        }
+    })
 
     const handleChange = (e) => {
         const {name, value} = e.target
@@ -27,11 +34,14 @@ function LoginPage({setIsAuthenticated}) {
 
         try {
             const response = await authAPI.login(formData)
-            const {token, user} = response.data
+            const {accessToken, tokenType, expiresIn, user} = response.data
+
+            const exp = new Date(Date.now() + expiresIn * 1000).toISOString()
 
             // Store auth data
-            localStorage.setItem('token', token)
+            localStorage.setItem('token', accessToken)
             localStorage.setItem('user', JSON.stringify(user))
+            localStorage.setItem('expiresIn', exp)
 
             // Update authentication state
             setIsAuthenticated(true)
