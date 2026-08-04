@@ -17,5 +17,9 @@ public class PlanService {
     public List<Plan> getPlans() {
         return repository.findAll();
     }
-    
+
+    public Plan getPlanById(Long id) {
+        return repository.findById(id).orElseThrow(() -> new RuntimeException("Plan not found"));
+    }
+
 }

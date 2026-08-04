@@ -20,16 +20,49 @@ public class Plan {
     @NotNull
     private BigDecimal monthlyPrice;
 
+    @NotNull
+    private Integer rank;
+
+    @NotNull
+    private String planId;
+
+    @NotNull
+    private String productId;
+
+    public String getProductId() {
+        return productId;
+    }
+
     public Plan() {
     }
 
-    public Plan(PlanType planType, BigDecimal monthlyPrice) {
-        this.id = id;
+    public Plan(PlanType planType, BigDecimal monthlyPrice, String planId) {
         this.planType = planType;
         this.monthlyPrice = monthlyPrice;
+        this.planId = planId;
     }
 
     public void setPlanType(PlanType planType) {
         this.planType = planType;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public PlanType getPlanType() {
+        return planType;
+    }
+
+    public BigDecimal getMonthlyPrice() {
+        return monthlyPrice;
+    }
+
+    public String getPlanId() {
+        return planId;
+    }
+
+    public Integer getRank() {
+        return rank;
     }
 }
