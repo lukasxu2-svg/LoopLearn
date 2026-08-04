@@ -1,9 +1,9 @@
 import {useState, useEffect} from 'react'
 import {useNavigate} from 'react-router-dom'
-import {planAPI, subscriptionAPI} from '../services/api.js'
-import '../styles/Dashboard.css'
-import '../styles/Popup.css'
-import {isTokenExpired} from "../auth/authUtils.js";
+import {paymentAPI, planAPI, subscriptionAPI} from '../../services/api.js'
+import './styles/Dashboard.css'
+import {isTokenExpired} from "../../auth/authUtils.js";
+import SubscriptionPopup from "./components/SubscriptionPopup.tsx";
 
 function DashboardPage({setIsAuthenticated}) {
     const navigate = useNavigate()
@@ -15,9 +15,11 @@ function DashboardPage({setIsAuthenticated}) {
     const [showCancelModal, setShowCancelModal] = useState(false)
     const [cancelLoading, setCancelLoading] = useState(false)
     const [successMessage, setSuccessMessage] = useState('')
+
     const [showPopup, setShowPopup] = useState(false)
     const [selectedPlan, setSelectedPlan] = useState(null)
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('card')
+
 
     useEffect(() => {
         if (isTokenExpired()) {
@@ -91,7 +93,7 @@ function DashboardPage({setIsAuthenticated}) {
             } else {
 
             }
-            await subscriptionAPI.changeSubscription(planId)
+            await paymentAPI.createSubscription()
             setSuccessMessage('Plan upgraded successfully')
             setTimeout(() => {
                 loadDashboardData()
@@ -116,98 +118,14 @@ function DashboardPage({setIsAuthenticated}) {
 
     return (
         <>
-            {showPopup && (
-                <div className="overlay" onClick={() => setShowPopup(false)}>
-                    <div className="popupContainer" onClick={(e) => e.stopPropagation()}>
-                        <div className="popupHeader">
-                            <div>
-                                <p className="popupEyebrow">Secure checkout</p>
-                                <h2>Choose your payment method</h2>
-                            </div>
-                            <button className="close-popup-button" onClick={() => setShowPopup(false)}>
-                                ✕
-                            </button>
-                        </div>
-
-                        <div className="popupLayout">
-                            <div className="popupPaymentMethod">
-                                <h3>Payment options</h3>
-                                <div className="payment-options">
-                                    <label className={`payment-option ${selectedPaymentMethod === 'card' ? 'active' : ''}`}>
-                                        <input
-                                            type="radio"
-                                            name="paymentMethod"
-                                            value="card"
-                                            checked={selectedPaymentMethod === 'card'}
-                                            onChange={() => setSelectedPaymentMethod('card')}
-                                        />
-                                        <span>
-                                            <strong>Credit / Debit Card</strong>
-                                            <small>Fast and secure checkout</small>
-                                        </span>
-                                    </label>
-
-                                    <label className={`payment-option ${selectedPaymentMethod === 'paypal' ? 'active' : ''}`}>
-                                        <input
-                                            type="radio"
-                                            name="paymentMethod"
-                                            value="paypal"
-                                            checked={selectedPaymentMethod === 'paypal'}
-                                            onChange={() => setSelectedPaymentMethod('paypal')}
-                                        />
-                                        <span>
-                                            <strong>PayPal</strong>
-                                            <small>Pay with your PayPal account</small>
-                                        </span>
-                                    </label>
-
-                                    <label className={`payment-option ${selectedPaymentMethod === 'bank' ? 'active' : ''}`}>
-                                        <input
-                                            type="radio"
-                                            name="paymentMethod"
-                                            value="bank"
-                                            checked={selectedPaymentMethod === 'bank'}
-                                            onChange={() => setSelectedPaymentMethod('bank')}
-                                        />
-                                        <span>
-                                            <strong>Bank Transfer</strong>
-                                            <small>Ideal for manual invoices</small>
-                                        </span>
-                                    </label>
-                                </div>
-                                <p className="popupNote">
-                                    Your subscription renews monthly unless you cancel before the next billing date.
-                                </p>
-                            </div>
-
-                            <div className="popupBill">
-                                <h3 className="popupBillHeader">Order summary</h3>
-                                <div className="popupBillRows">
-                                    <div className="popupBillRow">
-                                        <span>Plan</span>
-                                        <strong>{selectedPlan?.planType || 'Selected plan'}</strong>
-                                    </div>
-                                    <div className="popupBillRow">
-                                        <span>Monthly price</span>
-                                        <strong>€{Number(selectedPlan?.monthlyPrice || 0).toFixed(2)}</strong>
-                                    </div>
-                                    <div className="popupBillRow">
-                                        <span>Tax</span>
-                                        <strong>€0.00</strong>
-                                    </div>
-                                    <div className="popupBillRow total">
-                                        <span>Total to pay</span>
-                                        <strong>€{Number(selectedPlan?.monthlyPrice || 0).toFixed(2)}</strong>
-                                    </div>
-                                </div>
-                                <button className="popupConfirmButton" onClick={() => setShowPopup(false)}>
-                                    Confirm payment
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <SubscriptionPopup
+                show={showPopup}
+                selectedPaymentMethod={selectedPaymentMethod}
+                selectedPlan={selectedPlan}
+                setSelectedPaymentMethod={setSelectedPaymentMethod}
+                setSelectedPlan={setSelectedPlan}
+                setShowPopup={setShowPopup}
+            />
             <div className="dashboard-container">
                 {/* Header */}
                 <header className="dashboard-header">
@@ -301,13 +219,13 @@ function DashboardPage({setIsAuthenticated}) {
                                             className="upgrade-button"
                                             onClick={() => {
                                                 setSelectedPlan(plan)
-                                                setSelectedPaymentMethod('card')
+                                                setSelectedPaymentMethod('paypal')
                                                 setShowPopup(true)
                                                 handleUpgradePlan(plan.id)
                                             }}
                                             disabled={subscription?.planId === plan.id}
                                         >
-                                            {subscription?.planId === plan.id ? 'Current Plan' : 'Choose Plan'}
+                                            {subscription?.planId === plan.id ? 'Cancel Plan' : 'Choose Plan'}
                                         </button>
                                     </div>
                                 ))}
