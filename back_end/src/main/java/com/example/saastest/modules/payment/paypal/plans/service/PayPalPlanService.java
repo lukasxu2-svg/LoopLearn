@@ -3,6 +3,7 @@ package com.example.saastest.modules.payment.paypal.plans.service;
 import com.example.saastest.modules.payment.paypal.auth.service.PaypalTokenService;
 import com.example.saastest.modules.payment.paypal.plans.dto.request.PaypalCreatePlanRequestBody;
 import com.example.saastest.modules.payment.paypal.plans.dto.response.PaypalCreatePlanResponseBody;
+import com.example.saastest.modules.payment.paypal.plans.dto.response.PaypalGetPlanByIdResponseBody;
 import com.example.saastest.modules.payment.paypal.plans.dto.response.PaypalGetPlansResponseBody;
 import com.example.saastest.modules.payment.service.BaseService;
 import org.springframework.http.HttpHeaders;
@@ -40,5 +41,15 @@ public class PayPalPlanService extends BaseService {
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
         return get(uri, headers, PaypalGetPlansResponseBody.class);
+    }
+
+    public PaypalGetPlanByIdResponseBody getPlanById(String id) {
+        String uri = baseSandboxUrl + "/v1/billing/plans/" + id;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+        return get(uri, headers, PaypalGetPlanByIdResponseBody.class);
     }
 }
