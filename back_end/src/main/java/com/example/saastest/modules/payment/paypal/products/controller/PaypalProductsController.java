@@ -7,7 +7,7 @@ import com.example.saastest.modules.payment.paypal.products.service.PaypalProduc
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/paypal/products")
+@RequestMapping("/api/paypal/products")
 public class PaypalProductsController {
 
     private final PaypalProductsService service;
