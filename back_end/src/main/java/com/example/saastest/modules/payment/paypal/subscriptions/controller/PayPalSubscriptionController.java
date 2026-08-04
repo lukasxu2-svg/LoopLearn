@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/paypal/subscriptions")
+@RequestMapping("/api/paypal/subscriptions")
 public class PayPalSubscriptionController {
 
     private final PayPalSubscriptionService service;
@@ -24,7 +24,8 @@ public class PayPalSubscriptionController {
     }
 
     @PostMapping
-    public PaypalCreateSubscriptionResponseBody createSubscription(@RequestBody PaypalCreateSubscriptionRequestBody requestBody) {
+    public PaypalCreateSubscriptionResponseBody createSubscription(
+            @RequestBody PaypalCreateSubscriptionRequestBody requestBody) {
         return service.createSubscription(requestBody);
     }
 
@@ -34,12 +35,14 @@ public class PayPalSubscriptionController {
     }
 
     @PostMapping("/{subscriptionId}")
-    public Object updateSubscription(@PathVariable String subscriptionId, @RequestBody UpdateSubscriptionRequestBody requestBody) {
+    public Object updateSubscription(@PathVariable String subscriptionId,
+            @RequestBody UpdateSubscriptionRequestBody requestBody) {
         return service.updateSubscription(subscriptionId, requestBody);
     }
 
     @PostMapping("/{subscriptionId}/cancel")
-    public Object cancelSubscription(@PathVariable String subscriptionId, @RequestBody CancelSubscriptionRequestBody requestBody) {
+    public Object cancelSubscription(@PathVariable String subscriptionId,
+            @RequestBody CancelSubscriptionRequestBody requestBody) {
         return service.cancelSubscription(subscriptionId, requestBody);
     }
 }
