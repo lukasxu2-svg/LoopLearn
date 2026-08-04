@@ -8,7 +8,7 @@ import java.util.List;
 
 public record PlanDto(
         String id,
-        @JsonProperty("product_id") String productId,
+        @JsonProperty("plan_id") String productId,
         String name,
         String description,
         PlanStatusDto status,
