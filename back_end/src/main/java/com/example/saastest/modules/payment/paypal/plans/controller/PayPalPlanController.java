@@ -4,14 +4,10 @@ import com.example.saastest.modules.payment.paypal.plans.dto.request.PaypalCreat
 import com.example.saastest.modules.payment.paypal.plans.dto.response.PaypalCreatePlanResponseBody;
 import com.example.saastest.modules.payment.paypal.plans.dto.response.PaypalGetPlansResponseBody;
 import com.example.saastest.modules.payment.paypal.plans.service.PayPalPlanService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/paypal/plans")
+@RequestMapping("/api/paypal/plans")
 public class PayPalPlanController {
 
     private final PayPalPlanService service;
@@ -28,5 +24,10 @@ public class PayPalPlanController {
     @GetMapping
     public PaypalGetPlansResponseBody getPlans() {
         return service.getPlans();
+    }
+
+    @GetMapping("/{id}")
+    public void getPlanById(@PathVariable String id) {
+
     }
 }
