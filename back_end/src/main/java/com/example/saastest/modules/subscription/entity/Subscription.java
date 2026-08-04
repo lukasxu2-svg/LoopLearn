@@ -17,7 +17,7 @@ public class Subscription {
 
     @OneToOne
     @JoinColumn(name = "benutzer_id", unique = true)
-    private Benutzer benutzerId;
+    private Benutzer benutzer;
 
     @Enumerated(EnumType.STRING)
     @NotNull
@@ -38,12 +38,12 @@ public class Subscription {
     public Subscription() {
     }
 
-    public Subscription(String periodEnd, String periodStart, SubscriptionStatusDto subStatus, BigDecimal cost, PlanType subType, Benutzer benutzerId) {
+    public Subscription(String periodEnd, String periodStart, SubscriptionStatusDto subStatus, BigDecimal cost, PlanType subType, Benutzer benutzer) {
         this.periodEnd = periodEnd;
         this.periodStart = periodStart;
         this.subStatus = subStatus;
         this.cost = cost;
         this.subType = subType;
-        this.benutzerId = benutzerId;
+        this.benutzer = benutzer;
     }
 }

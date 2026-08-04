@@ -14,7 +14,7 @@ public class SubscriptionService {
     }
 
     public Subscription getCurrentSubscription(Long benutzerId) {
-        return repo.findByBenutzerId(benutzerId).orElseThrow(() -> new RuntimeException("No Subscription found"));
+        return repo.findByBenutzer_Id(benutzerId).orElse(null);
     }
 
     public void deleteCurrentSubscription(Long subId) {

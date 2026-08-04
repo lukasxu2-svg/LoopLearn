@@ -23,7 +23,7 @@ public class SubscriptionController {
         return service.getCurrentSubscription(benutzerId);
     }
 
-    @DeleteMapping("/${subscriptionId}/cancel")
+    @DeleteMapping("/{subscriptionId}/cancel")
     public void deleteCurrentSubscription(@PathVariable Long subId) {
         service.deleteCurrentSubscription(subId);
     }
