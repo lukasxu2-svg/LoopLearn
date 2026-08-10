@@ -28,11 +28,11 @@ public abstract class BaseService {
     }
 
     public <T> T get(String uri, HttpHeaders customHeaders, Class<T> responseType) {
-        if(tokenIsExpired()) {
+        if (tokenIsExpired()) {
             refreshToken();
         }
 
-        return  webClient.get()
+        return webClient.get()
                 .uri(uri)
                 .headers(header -> {
                     header.setBearerAuth(accessToken);
@@ -52,7 +52,7 @@ public abstract class BaseService {
     }
 
     public <T> T post(String uri, HttpHeaders customHeaders, Object requestBody, Class<T> responseType) {
-        if(tokenIsExpired()) {
+        if (tokenIsExpired()) {
             refreshToken();
         }
 
@@ -77,7 +77,7 @@ public abstract class BaseService {
     }
 
     public <T> T post(String uri, HttpHeaders customHeaders, Class<T> responseType) {
-        if(tokenIsExpired()) {
+        if (tokenIsExpired()) {
             refreshToken();
         }
 
@@ -89,12 +89,12 @@ public abstract class BaseService {
                 })
                 .retrieve()
                 .onStatus(
-                HttpStatusCode::isError,
-                response -> response.bodyToMono(String.class)
-                        .flatMap(body -> {
-                            System.out.println("PayPal error: " + body);
-                            return Mono.error(new RuntimeException(body));
-                        })
+                        HttpStatusCode::isError,
+                        response -> response.bodyToMono(String.class)
+                                .flatMap(body -> {
+                                    System.out.println("PayPal error: " + body);
+                                    return Mono.error(new RuntimeException(body));
+                                })
                 )
                 .bodyToMono(responseType)
                 .block();
