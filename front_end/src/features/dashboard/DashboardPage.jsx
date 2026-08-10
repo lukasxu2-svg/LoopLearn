@@ -1,13 +1,17 @@
 import {useState, useEffect} from 'react'
 import {useNavigate} from 'react-router-dom'
-import {paymentAPI, planAPI, subscriptionAPI} from '../../services/api.js'
+import {planAPI, subscriptionAPI} from '../../services/api.js'
 import './styles/Dashboard.css'
 import {isTokenExpired} from "../../auth/authUtils.js";
-import SubscriptionPopup from "./components/SubscriptionPopup.tsx";
+import SubscriptionPopup from "./components/SubscriptionPopup.jsx";
 
 function DashboardPage({setIsAuthenticated}) {
     const navigate = useNavigate()
-    const [user, setUser] = useState(null)
+    const [user, setUser] = useState({
+        email: '',
+        firstname: '',
+        lastname: ''
+    })
     const [subscription, setSubscription] = useState(null)
     const [plans, setPlans] = useState([])
     const [loading, setLoading] = useState(true)
@@ -18,6 +22,7 @@ function DashboardPage({setIsAuthenticated}) {
 
     const [showPopup, setShowPopup] = useState(false)
     const [selectedPlan, setSelectedPlan] = useState(null)
+    const [selectedPlanId, setSelectedPlanId] = useState(null)
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('card')
 
 
@@ -86,14 +91,14 @@ function DashboardPage({setIsAuthenticated}) {
 
             }
             const rank = plan.data.rank
-            if (currentSubscription.data.plan.rank > plan.data.rank) {
+            /*if (currentSubscription.data.plan.rank > plan.data.rank) {
 
             } else if (currentSubscription.data.plan.rank < plan.data.rank) {
 
             } else {
 
-            }
-            await paymentAPI.createSubscription()
+            }*/
+
             setSuccessMessage('Plan upgraded successfully')
             setTimeout(() => {
                 loadDashboardData()
@@ -125,6 +130,8 @@ function DashboardPage({setIsAuthenticated}) {
                 setSelectedPaymentMethod={setSelectedPaymentMethod}
                 setSelectedPlan={setSelectedPlan}
                 setShowPopup={setShowPopup}
+                planId={selectedPlanId}
+                user={user}
             />
             <div className="dashboard-container">
                 {/* Header */}
@@ -154,29 +161,29 @@ function DashboardPage({setIsAuthenticated}) {
                                 <div className="subscription-info">
                                     <div className="info-item">
                                         <label>Plan Name</label>
-                                        <p className="plan-name">{subscription.planName || 'Free Plan'}</p>
+                                        <p className="plan-name">{subscription.planType}</p>
                                     </div>
 
                                     <div className="info-item">
                                         <label>Status</label>
                                         <p className={`status ${subscription.status?.toLowerCase()}`}>
-                                            {subscription.status || 'Active'}
+                                            {subscription.status}
                                         </p>
                                     </div>
 
                                     <div className="info-item">
                                         <label>Start Date</label>
-                                        <p>{subscription.startDate ? new Date(subscription.startDate).toLocaleDateString() : 'N/A'}</p>
+                                        <p>{subscription.periodStart.slice(0, 10)}</p>
                                     </div>
 
                                     <div className="info-item">
                                         <label>Renewal Date</label>
-                                        <p>{subscription.renewalDate ? new Date(subscription.renewalDate).toLocaleDateString() : 'N/A'}</p>
+                                        <p>{subscription.periodEnd.slice(0, 10)}</p>
                                     </div>
 
                                     <div className="info-item">
                                         <label>Price</label>
-                                        <p className="price">${subscription.price || '0.00'} / month</p>
+                                        <p className="price">€{subscription.cost} / month</p>
                                     </div>
                                 </div>
 
@@ -219,6 +226,7 @@ function DashboardPage({setIsAuthenticated}) {
                                             className="upgrade-button"
                                             onClick={() => {
                                                 setSelectedPlan(plan)
+                                                setSelectedPlanId(plan.id)
                                                 setSelectedPaymentMethod('paypal')
                                                 setShowPopup(true)
                                                 handleUpgradePlan(plan.id)

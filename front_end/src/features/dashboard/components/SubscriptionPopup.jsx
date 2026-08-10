@@ -1,15 +1,5 @@
-import {useState} from "react";
 import '../styles/Popup.css'
-import {paymentAPI} from '../../../services/api.js'
-
-type SubscriptionPopupProps = {
-    show: boolean,
-    setShowPopup,
-    selectedPlan,
-    setSelectedPlan,
-    selectedPaymentMethod,
-    setSelectedPaymentMethod
-}
+import {subscriptionAPI} from '../../../services/api.js'
 
 function SubscriptionPopup({
                                show,
@@ -18,14 +8,35 @@ function SubscriptionPopup({
                                setSelectedPlan,
                                selectedPaymentMethod,
                                setSelectedPaymentMethod,
-                           }: SubscriptionPopupProps) {
+                               planId,
+                               user
+                           }) {
 
-    const payment = async () => {
+    const confirmPayment = async () => {
         try {
-            const test = await paymentAPI.createSubscription()
-            
-        } catch (e) {
+            const body = {
+                simplePlanId: planId,
+                subscriber: {
+                    email_address: user.email,
+                    name: {
+                        given_name: user.firstName,
+                        surname: user.lastName
+                    }
+                }
+            }
+            const response = await subscriptionAPI.createSubscription(body)
+            const approvalUrl = response.data.links.find(link => link.rel === "approve").href
 
+            window.open(approvalUrl, "_blank")
+            console.log(response)
+
+        } catch (e) {
+            console.error("Payment error:", e);
+
+            if (e.response) {
+                console.error("Status:", e.response.status);
+                console.error("Data:", e.response.data);
+            }
         }
     }
 
@@ -87,7 +98,10 @@ function SubscriptionPopup({
                                     <strong>{Number(selectedPlan?.monthlyPrice || 0).toFixed(2)}€</strong>
                                 </div>
                             </div>
-                            <button className="popupConfirmButton" onClick={() => setShowPopup(false)}>
+                            <button className="popupConfirmButton" onClick={() => {
+                                confirmPayment()
+                                setShowPopup(false)
+                            }}>
                                 Confirm payment
                             </button>
                         </div>
