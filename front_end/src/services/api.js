@@ -1,13 +1,13 @@
-import axios from 'axios'
+import axios from "axios";
 
-const API_BASE_URL = 'http://localhost:8080/api'
+const API_BASE_URL = "http://localhost:8080/api";
 
 const api = axios.create({
     baseURL: API_BASE_URL,
     headers: {
         'Content-Type': 'application/json',
     },
-})
+});
 
 // Add token to requests
 api.interceptors.request.use((config) => {
@@ -45,11 +45,12 @@ export const subscriptionAPI = {
     cancelSubscription: (subscriptionId) =>
         api.post(`/subscription/${subscriptionId}/cancel`),
     changeSubscription: (id) => api.post(`/subscription/${id}`),
+    createSubscription: (data) => api.post(`/subscription`, data)
 };
 
 export const planAPI = {
     getPlanById: (id) => api.get(`/plans/${id}`),
-    getPlans: () => api.get("/plans"),
+    getPlans: () => api.get(`/plans`),
 };
 
 export default api;
