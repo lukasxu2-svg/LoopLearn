@@ -2,7 +2,7 @@ import {BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom
 import {useState, useEffect} from 'react'
 import LoginPage from './pages/LoginPage.jsx'
 import SignupPage from './pages/SignupPage.jsx'
-import DashboardPage from './pages/DashboardPage.jsx'
+import DashboardPage from './features/dashboard/DashboardPage.jsx'
 import PrivateRoute from './components/PrivateRoute.jsx'
 import './App.css'
 
