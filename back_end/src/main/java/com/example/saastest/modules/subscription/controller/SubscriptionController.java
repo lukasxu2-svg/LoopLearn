@@ -1,6 +1,9 @@
 package com.example.saastest.modules.subscription.controller;
 
+import com.example.saastest.modules.payment.paypal.subscriptions.dto.response.PaypalCreateSubscriptionResponseBody;
 import com.example.saastest.modules.subscription.dto.request.CreateSubscriptionRequestBody;
+import com.example.saastest.modules.subscription.dto.response.CreateSubscriptionResponseBody;
+import com.example.saastest.modules.subscription.dto.response.getCurrentSubscriptionResponseBody;
 import com.example.saastest.modules.subscription.entity.Subscription;
 import com.example.saastest.modules.subscription.service.SubscriptionService;
 import org.springframework.security.core.Authentication;
@@ -17,7 +20,7 @@ public class SubscriptionController {
     }
 
     @GetMapping("/current")
-    public Subscription getCurrentSubscription(Authentication authentication) {
+    public getCurrentSubscriptionResponseBody getCurrentSubscription(Authentication authentication) {
         Long benutzerId = Long.valueOf(authentication.getName());
 
         return service.getCurrentSubscription(benutzerId);
@@ -29,7 +32,7 @@ public class SubscriptionController {
     }
 
     @PostMapping
-    public Subscription createSubscription(@RequestBody CreateSubscriptionRequestBody body) {
+    public CreateSubscriptionResponseBody createSubscription(@RequestBody CreateSubscriptionRequestBody body) {
         return service.createSubscription(body);
     }
 }

@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 @Entity
 public class Subscription {
@@ -15,35 +16,68 @@ public class Subscription {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "benutzer_id", unique = true)
+    private String subscriptionId;
+
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "benutzer_id", nullable = false)
     private Benutzer benutzer;
 
+    @NotNull
+    private String planId;
+
+    @NotNull
     @Enumerated(EnumType.STRING)
-    @NotNull
-    private PlanType subType;
-
-    @NotNull
-    private BigDecimal cost;
-
     private SubscriptionStatusDto subStatus;
 
     @NotNull
-    private String periodStart;
+    private Instant periodStart;
 
     @NotNull
-    private String periodEnd;
+    private Instant periodEnd;
 
 
     public Subscription() {
     }
 
-    public Subscription(String periodEnd, String periodStart, SubscriptionStatusDto subStatus, BigDecimal cost, PlanType subType, Benutzer benutzer) {
-        this.periodEnd = periodEnd;
-        this.periodStart = periodStart;
-        this.subStatus = subStatus;
-        this.cost = cost;
-        this.subType = subType;
+    public Subscription(String subscriptionId, Benutzer benutzer, String planId, SubscriptionStatusDto subStatus, Instant periodStart, Instant periodEnd) {
+        this.subscriptionId = subscriptionId;
         this.benutzer = benutzer;
+        this.planId = planId;
+        this.subStatus = subStatus;
+        this.periodStart = periodStart;
+        this.periodEnd = periodEnd;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getSubscriptionId() {
+        return subscriptionId;
+    }
+
+    public Benutzer getBenutzer() {
+        return benutzer;
+    }
+
+    public String getPlanId() {
+        return planId;
+    }
+
+    public SubscriptionStatusDto getSubStatus() {
+        return subStatus;
+    }
+
+    public Instant getPeriodStart() {
+        return periodStart;
+    }
+
+    public Instant getPeriodEnd() {
+        return periodEnd;
+    }
+
+    public void setSubStatus(SubscriptionStatusDto subStatus) {
+        this.subStatus = subStatus;
     }
 }
