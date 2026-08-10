@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 public record PaypalCreateSubscriptionResponseBody(
-        String id,
+        String id, //Is Subscription Id
 
         @JsonProperty("plan_id") String planId,
 

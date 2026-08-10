@@ -10,7 +10,6 @@ import java.util.List;
 
 public record PaypalCreateSubscriptionRequestBody(
         String plan_id, //Not PayPal plan id
-        String start_time,
         SubscriberDto subscriber
 ) {
 }
