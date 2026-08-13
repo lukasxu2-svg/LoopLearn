@@ -49,7 +49,8 @@ function DashboardPage({setIsAuthenticated}) {
             // Load available plans
             try {
                 const plansResponse = await planAPI.getPlans()
-                setPlans(plansResponse.data)
+                const sortedPlans = plansResponse.data.sort((a, b) => a.rank - b.rank)
+                setPlans(sortedPlans)
             } catch (err) {
                 console.log('Could not load plans')
             }
@@ -62,11 +63,11 @@ function DashboardPage({setIsAuthenticated}) {
     }
 
     const handleCancelSubscription = async () => {
-        if (!subscription?.id) return
+        if (!subscription || subscription.cancelled) return
 
         setCancelLoading(true)
         try {
-            await subscriptionAPI.cancelSubscription(subscription.id)
+            await subscriptionAPI.cancelSubscription()
             setSuccessMessage('Subscription cancelled successfully')
             setShowCancelModal(false)
             // Reload data
@@ -139,7 +140,7 @@ function DashboardPage({setIsAuthenticated}) {
                     <div className="header-content">
                         <div>
                             <h1>Dashboard</h1>
-                            <p>Welcome, {user?.firstname}!</p>
+                            <p>Welcome, {user?.firstName}!</p>
                         </div>
                         <button className="logout-button" onClick={handleLogout}>
                             Logout
@@ -172,12 +173,12 @@ function DashboardPage({setIsAuthenticated}) {
                                     </div>
 
                                     <div className="info-item">
-                                        <label>Start Date</label>
+                                        <label>Active from</label>
                                         <p>{subscription.periodStart.slice(0, 10)}</p>
                                     </div>
 
                                     <div className="info-item">
-                                        <label>Renewal Date</label>
+                                        <label>Active till</label>
                                         <p>{subscription.periodEnd.slice(0, 10)}</p>
                                     </div>
 
@@ -191,9 +192,9 @@ function DashboardPage({setIsAuthenticated}) {
                                     <button
                                         className="cancel-button"
                                         onClick={() => setShowCancelModal(true)}
-                                        disabled={subscription.status === 'CANCELLED'}
+                                        disabled={subscription.cancelled}
                                     >
-                                        Cancel Subscription
+                                        {subscription.cancelled ? "Cancelled" : "Cancel Subscription"}
                                     </button>
                                 </div>
                             </div>
@@ -224,16 +225,22 @@ function DashboardPage({setIsAuthenticated}) {
 
                                         <button
                                             className="upgrade-button"
+                                            disabled={subscription?.planType === plan.planType && subscription.cancelled}
                                             onClick={() => {
                                                 setSelectedPlan(plan)
                                                 setSelectedPlanId(plan.id)
                                                 setSelectedPaymentMethod('paypal')
-                                                setShowPopup(true)
-                                                handleUpgradePlan(plan.id)
+                                                if (subscription?.planType !== plan.planType) {
+                                                    setShowPopup(true)
+                                                } else {
+                                                    handleCancelSubscription()
+                                                }
+
                                             }}
-                                            disabled={subscription?.planId === plan.id}
                                         >
-                                            {subscription?.planId === plan.id ? 'Cancel Plan' : 'Choose Plan'}
+                                            {subscription?.planType === plan.planType ?
+                                                subscription.cancelled ? "Cancelled" : "Cancel Subscription" :
+                                                'Choose Plan'}
                                         </button>
                                     </div>
                                 ))}
@@ -247,8 +254,8 @@ function DashboardPage({setIsAuthenticated}) {
                     <div className="modal-overlay">
                         <div className="modal">
                             <h2>Cancel Subscription</h2>
-                            <p>Are you sure you want to cancel your subscription? You will lose access to all premium
-                                features.</p>
+                            <p>Are you sure you want to cancel your subscription? You have access to the features till
+                                the cancellation date</p>
                             <div className="modal-actions">
                                 <button
                                     className="modal-button cancel"

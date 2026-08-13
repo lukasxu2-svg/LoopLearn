@@ -42,8 +42,7 @@ export const authAPI = {
 // Subscription endpoints
 export const subscriptionAPI = {
     getSubscription: () => api.get("/subscription/current"),
-    cancelSubscription: (subscriptionId) =>
-        api.post(`/subscription/${subscriptionId}/cancel`),
+    cancelSubscription: () => api.post(`/subscription/current/cancel`),
     changeSubscription: (id) => api.post(`/subscription/${id}`),
     createSubscription: (data) => api.post(`/subscription`, data)
 };
