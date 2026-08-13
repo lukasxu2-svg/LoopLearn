@@ -36,6 +36,8 @@ public class Subscription {
     @NotNull
     private Instant periodEnd;
 
+    private boolean canceled;
+
 
     public Subscription() {
     }
@@ -77,7 +79,15 @@ public class Subscription {
         return periodEnd;
     }
 
+    public boolean isCanceled() {
+        return canceled;
+    }
+
     public void setSubStatus(SubscriptionStatusDto subStatus) {
         this.subStatus = subStatus;
+    }
+
+    public void setCanceled() {
+        this.canceled = true;
     }
 }

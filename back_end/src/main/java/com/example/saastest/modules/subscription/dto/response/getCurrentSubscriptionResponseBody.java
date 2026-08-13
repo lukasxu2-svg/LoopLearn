@@ -11,6 +11,7 @@ public record getCurrentSubscriptionResponseBody(
         PlanType planType,
         BigDecimal cost,
         Instant periodStart,
-        Instant periodEnd
+        Instant periodEnd,
+        boolean cancelled
 ) {
 }

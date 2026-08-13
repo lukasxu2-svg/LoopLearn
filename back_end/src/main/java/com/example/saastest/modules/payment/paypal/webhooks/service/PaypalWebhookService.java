@@ -44,7 +44,9 @@ public class PaypalWebhookService extends BaseService {
 
             case "BILLING.SUBSCRIPTION.CANCELLED": {
                 String subscriptionId = event.get("resource").get("id").asString();
-                setSubscriptionStatus(subscriptionId, SubscriptionStatusDto.CANCELLED);
+                Subscription subscription = subscriptionRepository.findBySubscriptionId(subscriptionId).orElseThrow(() -> new RuntimeException("Subscription not found"));
+                subscription.setCanceled();
+                subscriptionRepository.save(subscription);
                 break;
             }
 

@@ -3,6 +3,7 @@ package com.example.saastest.modules.subscription.service;
 import com.example.saastest.modules.benutzer.entity.Benutzer;
 import com.example.saastest.modules.benutzer.repository.BenutzerRepository;
 import com.example.saastest.modules.payment.paypal.subscriptions.dto.enums.SubscriptionStatusDto;
+import com.example.saastest.modules.payment.paypal.subscriptions.dto.request.CancelSubscriptionRequestBody;
 import com.example.saastest.modules.payment.paypal.subscriptions.dto.request.PaypalCreateSubscriptionRequestBody;
 import com.example.saastest.modules.payment.paypal.subscriptions.dto.response.PaypalCreateSubscriptionResponseBody;
 import com.example.saastest.modules.payment.paypal.subscriptions.service.PayPalSubscriptionService;
@@ -16,10 +17,7 @@ import com.example.saastest.modules.subscription.repository.SubscriptionReposito
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.LocalTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
 
 @Service
 public class SubscriptionService {
@@ -36,22 +34,34 @@ public class SubscriptionService {
     }
 
     public getCurrentSubscriptionResponseBody getCurrentSubscription(Long benutzerId) {
-        Subscription subscription = subscriptionRepository.findByBenutzer_IdAndSubStatus(benutzerId, SubscriptionStatusDto.ACTIVE).orElse(null);
+        Subscription subscription = subscriptionRepository.findByBenutzer_IdAndSubStatus(benutzerId, SubscriptionStatusDto.ACTIVE)
+                .orElseThrow(() -> new RuntimeException("No active subscription found"));
         Plan plan = planRepository.findByPlanId(subscription.getPlanId()).orElseThrow(() -> new RuntimeException("Plan not found"));
 
+        if (subscription.isCanceled() && Instant.now().isAfter(subscription.getPeriodEnd())) {
+            subscription.setSubStatus(SubscriptionStatusDto.CANCELLED);
+            return null;
+        }
 
         getCurrentSubscriptionResponseBody responseBody = new getCurrentSubscriptionResponseBody(
                 subscription.getSubStatus(),
                 plan.getPlanType(),
                 plan.getMonthlyPrice(),
                 subscription.getPeriodStart(),
-                subscription.getPeriodEnd());
+                subscription.getPeriodEnd(),
+                subscription.isCanceled()
+        );
 
         return responseBody;
     }
 
-    public void deleteCurrentSubscription(Long subId) {
-        subscriptionRepository.deleteById(subId);
+    public void cancelCurrentSubscription(Long benutzerId) {
+        Subscription subscription = subscriptionRepository.findByBenutzer_IdAndSubStatus(benutzerId, SubscriptionStatusDto.ACTIVE)
+                .orElseThrow(() -> new RuntimeException("No active subscription found"));
+
+        String subId = subscription.getSubscriptionId();
+        CancelSubscriptionRequestBody requestBody = new CancelSubscriptionRequestBody("Cancel");
+        payPalService.cancelSubscription(subId, requestBody);
     }
 
 
