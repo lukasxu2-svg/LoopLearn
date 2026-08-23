@@ -1,8 +1,8 @@
 import React from "react";
-import {subscriptionAPI} from "../../../../../services/api";
+import {subscriptionAPI} from "../../../../services/api";
+import {useNotifications} from "../../../../context/NotificationContext";
 
 interface CancellationModalProps {
-    subscription;
     showCancelModal: boolean;
     setShowCancelModal: React.Dispatch<React.SetStateAction<boolean>>;
     loading: boolean;
@@ -11,29 +11,28 @@ interface CancellationModalProps {
 
 function CancellationModal(
     {
-        subscription,
         showCancelModal,
         setShowCancelModal,
         loading,
         setLoading
     }: CancellationModalProps
 ) {
+    const {setSuccessMessage, setErrorMessage} = useNotifications();
 
     const handleCancelSubscription = async () => {
-        //if (!subscription || subscription.cancelled) return;
-
         setLoading(true);
         try {
             await subscriptionAPI.cancelSubscription();
-            //setSuccessMessage("Subscription cancelled successfully");
+
+            setSuccessMessage("Subscription cancelled successfully");
+
             setShowCancelModal(false);
             setTimeout(() => {
                 setLoading(false);
                 setShowCancelModal(false);
             }, 3000);
         } catch (err: any) {
-            //setError(err.response?.data?.message || "Failed to cancel subscription");
-            console.error("Cancel error:", err);
+            setErrorMessage("Failed to cancel subscription");
         } finally {
             window.location.reload();
         }

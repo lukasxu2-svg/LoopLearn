@@ -1,12 +1,17 @@
-import React, {useState, useEffect, use} from "react";
+import React, {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {planAPI, subscriptionAPI} from "../../services/api.js";
 import "./styles/Dashboard.css";
 import {isTokenExpired} from "../../auth/authUtils.js";
-import PaymentModal from "./components/PlanCatalog/Popups/PaymentModal";
 import PlanCatalog from "./components/PlanCatalog/PlanCatalog";
+import SubscriptionModal from "./components/SubscriptionModal/SubscriptionModal";
+import CancellationModal from "./components/PopupModals/CancellationModal";
+import CancelNextModal from "./components/PopupModals/CancelNextModal";
+import FreePlanModal from "./components/PopupModals/FreePlanModal";
+import PaymentModal from "./components/PopupModals/PaymentModal";
+import {useNotifications} from "../../context/NotificationContext";
 
-interface User {
+export interface User {
     email?: string;
     firstName?: string;
     lastName?: string;
@@ -23,19 +28,21 @@ function DashboardPage({
         firstName: "",
         lastName: "",
     });
-    const [subscription, setSubscription] = useState<any>(null);
-    const [plans, setPlans] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
 
-    const [successMessage, setSuccessMessage] = useState("");
+    const [plans, setPlans] = useState<any[]>([]);
+    const [subscription, setSubscription] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    const {errorMessage, successMessage, setSuccessMessage, setErrorMessage, clearNotifications} =
+        useNotifications();
 
     const [showCancelModal, setShowCancelModal] = useState(false);
+    const [showCancelNextModal, setShowCancelNextModal] = useState(false);
     const [modalLoading, setModalLoading] = useState(false);
 
-    const [showPopup, setShowPopup] = useState(false);
-
     const [showFreePlanModal, setShowFreePlanModal] = useState(false);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [selectedPlan, setSelectedPlan] = useState<any | null>(null);
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("paypal");
 
     useEffect(() => {
         if (isTokenExpired()) {
@@ -46,38 +53,42 @@ function DashboardPage({
 
     const loadDashboardData = async () => {
         setLoading(true);
-        setError("");
+        clearNotifications();
         try {
             const userData = localStorage.getItem("user");
             if (userData) {
                 setUser(JSON.parse(userData));
             }
+            await loadSubscriptionData();
+            await loadPlans();
 
-            const subResponse = await subscriptionAPI.getSubscription();
-            setSubscription(subResponse.data);
+            setSuccessMessage("Successfully loaded dashboard data")
         } catch (err) {
-            setError("Failed to load subscription data");
-            console.error("Error loading dashboard:", err);
+            setErrorMessage("Failed to load dashboard data");
         } finally {
             setLoading(false);
+
         }
     };
 
-    const handleUpgradePlan = async (planId: any) => {
+    const loadSubscriptionData = async () => {
         try {
-            const currentSubscription = await subscriptionAPI.getSubscription();
-            const plan = await planAPI.getPlanById(planId);
+            const subResponse = await subscriptionAPI.getSubscription();
+            setSubscription(subResponse.data);
+        } catch (err) {
+            setErrorMessage("Failed to load subscription data");
+        }
+    }
 
-            const rank = plan.data.rank;
-
-            setSuccessMessage("Plan upgraded successfully");
-            setTimeout(() => {
-                loadDashboardData();
-                setSuccessMessage("");
-            }, 2000);
-        } catch (err: any) {
-            setError(err.response?.data?.message || "Failed to upgrade plan");
-            console.error("Upgrade error:", err);
+    const loadPlans = async () => {
+        try {
+            const plansResponse = await planAPI.getPlans();
+            const sortedPlans = plansResponse.data.sort(
+                (a: any, b: any) => a.rank - b.rank,
+            );
+            setPlans(sortedPlans);
+        } catch (err) {
+            setErrorMessage("Failed to load plan data");
         }
     };
 
@@ -107,74 +118,71 @@ function DashboardPage({
                     </div>
                 </header>
 
-                {error && <div className="alert alert-error">{error}</div>}
+                {errorMessage && (
+                    <div className="alert alert-error">{errorMessage}</div>
+                )}
                 {successMessage && (
                     <div className="alert alert-success">{successMessage}</div>
                 )}
 
+                <CancelNextModal
+                    showCancelNextModal={showCancelNextModal}
+                    setShowCancelNextModal={setShowCancelNextModal}
+                    loading={modalLoading}
+                    setLoading={setModalLoading}
+                />
+
+                <CancellationModal
+                    showCancelModal={showCancelModal}
+                    setShowCancelModal={setShowCancelModal}
+                    loading={modalLoading}
+                    setLoading={setModalLoading}
+                />
+
+                <FreePlanModal
+                    subscription={subscription}
+                    showFreePlanModal={showFreePlanModal}
+                    setShowFreePlanModal={setShowFreePlanModal}
+                    modalLoading={modalLoading}
+                    setModalLoading={setModalLoading}
+                    user={user}
+                    selectedPlan={selectedPlan}
+                />
+
+                <PaymentModal
+                    showPaymentModal={showPaymentModal}
+                    setShowPaymentModal={setShowPaymentModal}
+                    selectedPlan={selectedPlan}
+                    selectedPaymentMethod={selectedPaymentMethod}
+                    setSelectedPaymentMethod={setSelectedPaymentMethod}
+                    user={user}
+                    loading={modalLoading}
+                    setLoading={setModalLoading}
+                />
+
                 <div className="dashboard-content">
-                    <section className="subscription-section">
-                        <h2>Your Subscription</h2>
+                    <SubscriptionModal
+                        title={"Current Subscription"}
+                        subscription={subscription}
+                        setShowCancelModal={setShowCancelModal}
+                    />
 
-                        {subscription ? (
-                            <div className="subscription-card">
-                                <div className="subscription-info">
-                                    <div className="info-item">
-                                        <label>Plan Name</label>
-                                        <p className="plan-name">{subscription.planType}</p>
-                                    </div>
-
-                                    <div className="info-item">
-                                        <label>Status</label>
-                                        <p
-                                            className={`status ${subscription.status?.toLowerCase()}`}
-                                        >
-                                            {subscription.status}
-                                        </p>
-                                    </div>
-
-                                    <div className="info-item">
-                                        <label>Active from</label>
-                                        <p>{subscription.periodStart.slice(0, 10)}</p>
-                                    </div>
-
-                                    <div className="info-item">
-                                        <label>Active till</label>
-                                        <p>{subscription.periodEnd.slice(0, 10)}</p>
-                                    </div>
-
-                                    <div className="info-item">
-                                        <label>Price</label>
-                                        <p className="price">€{subscription.cost} / month</p>
-                                    </div>
-                                </div>
-
-                                <div className="subscription-actions">
-                                    <button
-                                        className="cancel-button"
-                                        onClick={() => setShowCancelModal(true)}
-                                        disabled={subscription.cancelled}
-                                    >
-                                        {subscription.cancelled
-                                            ? "Cancelled"
-                                            : "Cancel Subscription"}
-                                    </button>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="no-subscription">
-                                <p>You don't have an active subscription</p>
-                                <p className="note">Choose a plan below to get started</p>
-                            </div>
-                        )}
-                    </section>
+                    {subscription?.nextSubscription && (
+                        <SubscriptionModal
+                            title={"Next Subscription"}
+                            subscription={subscription.nextSubscription}
+                            setShowCancelModal={setShowCancelNextModal}
+                        />
+                    )}
 
                     <PlanCatalog
+                        plans={plans}
                         subscription={subscription}
-                        loading={modalLoading}
-                        setLoading={setModalLoading}
-                        showCancelModal={showCancelModal}
                         setShowCancelModal={setShowCancelModal}
+                        user={user}
+                        setShowFreePlanModal={setShowFreePlanModal}
+                        setShowPaymentModal={setShowPaymentModal}
+                        setSelectedPlan={setSelectedPlan}
                     />
                 </div>
             </div>

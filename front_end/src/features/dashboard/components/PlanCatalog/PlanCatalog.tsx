@@ -1,79 +1,28 @@
 import React, {useEffect, useState} from "react";
 import {planAPI} from "../../../../services/api";
-import CancellationModal from "./Popups/CancellationModal";
-import PaymentModal from "./Popups/PaymentModal";
-import FreePlanModal from "./Popups/FreePlanModal";
-
+import {useNotifications} from "../../../../context/NotificationContext";
 
 interface PlanCatalogType {
-    subscription,
-    loading: boolean;
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-    showCancelModal: boolean;
+    plans;
+    subscription;
     setShowCancelModal: React.Dispatch<React.SetStateAction<boolean>>;
-    user
+    setShowFreePlanModal: React.Dispatch<React.SetStateAction<boolean>>;
+    setShowPaymentModal: React.Dispatch<React.SetStateAction<boolean>>;
+    setSelectedPlan: React.Dispatch<React.SetStateAction<any | null>>;
+    user;
 }
 
-
-function PlanCatalog(
-    {
-        subscription,
-        loading,
-        setLoading,
-        showCancelModal,
-        setShowCancelModal,
-        user
-    }: PlanCatalogType) {
-
-    const [plans, setPlans] = useState<any[]>([]);
-    const [showFreePlanModal, setShowFreePlanModal] = useState(false);
-    const [showPaymentModal, setShowPaymentModal] = useState(false);
-    const [selectedPlan, setSelectedPlan] = useState<any | null>(null);
-    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("paypal");
-
-    useEffect(() => {
-        loadPlans();
-    }, [])
-
-
-    const loadPlans = async () => {
-        try {
-            const plansResponse = await planAPI.getPlans();
-            const sortedPlans = plansResponse.data.sort(
-                (a: any, b: any) => a.rank - b.rank,
-            );
-            setPlans(sortedPlans);
-        } catch (e) {
-            //TODO
-        }
-    }
+function PlanCatalog({
+                         plans,
+                         subscription,
+                         setShowCancelModal,
+                         setShowFreePlanModal,
+                         setShowPaymentModal,
+                         setSelectedPlan,
+                     }: PlanCatalogType) {
 
     return (
         <>
-            <CancellationModal
-                showCancelModal={showCancelModal}
-                setShowCancelModal={setShowCancelModal}
-                loading={loading}
-                setLoading={setLoading}
-            />
-
-            <FreePlanModal
-                subscription={subscription}
-                showFreePlanModal={showFreePlanModal}
-                setShowFreePlanModal={setShowFreePlanModal}
-                modalLoading={loading}
-                setModalLoading={setLoading}
-            />
-
-            <PaymentModal
-                showPaymentModal={showPaymentModal}
-                setShowPaymentModal={setShowPaymentModal}
-                selectedPlan={selectedPlan}
-                selectedPaymentMethod={selectedPaymentMethod}
-                setSelectedPaymentMethod={setSelectedPaymentMethod}
-                user={user}
-            />
-
             {plans && plans.length > 0 && (
                 <section className="plans-section">
                     <h2>Available Plans</h2>
@@ -87,25 +36,21 @@ function PlanCatalog(
                                 <button
                                     className="upgrade-button"
                                     disabled={
-                                        (subscription?.planType === plan.planType &&
-                                            subscription.cancelled)
+                                        subscription?.planType === plan.planType ||
+                                        subscription?.cancelled
                                     }
                                     onClick={() => {
+                                        setSelectedPlan(plan);
                                         if (plan.planType === "FREE") {
                                             setShowFreePlanModal(true);
                                         } else if (subscription?.planType === plan.planType) {
-                                            setShowCancelModal(true)
+                                            setShowCancelModal(true);
                                         } else {
-                                            setSelectedPlan(plan)
-                                            setShowPaymentModal(true)
+                                            setShowPaymentModal(true); //TODO Implement upgrade downgrade
                                         }
                                     }}
                                 >
-                                    {subscription?.planType === plan.planType
-                                        ? subscription.cancelled
-                                            ? "Cancelled"
-                                            : "Cancel Subscription"
-                                        : "Choose Plan"}
+                                    {"Choose Plan"}
                                 </button>
                             </div>
                         ))}
@@ -113,7 +58,7 @@ function PlanCatalog(
                 </section>
             )}
         </>
-    )
+    );
 }
 
 export default PlanCatalog;

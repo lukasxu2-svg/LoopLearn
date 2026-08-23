@@ -1,5 +1,6 @@
 import React from "react";
-import {subscriptionAPI} from "../../../../../services/api";
+import {subscriptionAPI} from "../../../../services/api";
+import {useNotifications} from "../../../../context/NotificationContext";
 
 interface FreePlanModalProps {
     subscription
@@ -21,6 +22,8 @@ function FreePlanModal(
         user,
         selectedPlan
     }: FreePlanModalProps) {
+    const {setSuccessMessage, setErrorMessage} = useNotifications();
+
 
     const handleFreePlan = async () => {
         if (subscription) {
@@ -38,13 +41,14 @@ function FreePlanModal(
                     },
                 },
             };
-            const response = await subscriptionAPI.createFreeSubscription(body);
+            await subscriptionAPI.createFreeSubscription(body);
+            setSuccessMessage("Successfully created free subscription")
             setTimeout(() => {
                 setModalLoading(false);
                 setShowFreePlanModal(false);
             }, 3000);
         } catch (e) {
-
+            setErrorMessage("Creating free subscription failed")
         } finally {
             window.location.reload();
         }

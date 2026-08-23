@@ -157,8 +157,15 @@
     cursor: pointer;
 }
 
-.popupConfirmButton:hover {
+.popupConfirmButton:hover:not(:disabled) {
     background: #4338ca;
+}
+
+.popupConfirmButton:disabled {
+    background: #c7d2fe;
+    color: #eef2ff;
+    cursor: not-allowed;
+    opacity: 0.8;
 }
 
 @keyframes slideUp {

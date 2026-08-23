@@ -1,34 +1,36 @@
-import "../../../styles/Popup.css";
-import {subscriptionAPI} from "../../../../../services/api.js";
+import "../../styles/Popup.css";
+import {subscriptionAPI} from "../../../../services/api.js";
 import React from "react";
+import {useNotifications} from "../../../../context/NotificationContext";
+import {User} from "../../DashboardPage";
 
-interface User {
-    email?: string;
-    firstName?: string;
-    lastName?: string;
-}
 
 interface PaymentModalProps {
-    subscription;
     showPaymentModal: boolean;
     setShowPaymentModal: (v: boolean) => void;
     selectedPlan: any;
     selectedPaymentMethod: string;
     setSelectedPaymentMethod: (m: string) => void;
     user: User;
+    loading: boolean;
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function PaymentModal({
-                          subscription,
                           showPaymentModal,
                           setShowPaymentModal,
                           selectedPlan,
                           selectedPaymentMethod,
                           setSelectedPaymentMethod,
                           user,
+                          loading,
+                          setLoading
                       }: PaymentModalProps) {
+    const {setSuccessMessage, setErrorMessage} = useNotifications();
+
 
     const confirmPayment = async () => {
+        setLoading(true);
         try {
             const body = {
                 simplePlanId: selectedPlan.id,
@@ -40,20 +42,20 @@ function PaymentModal({
                     },
                 },
             };
-
-            let response;
-            response = await subscriptionAPI.createSubscription(body);
-
+            const response = await subscriptionAPI.createSubscription(body);
 
             const approvalUrl = response.data.links.find(
                 (link: any) => link.rel === "approve",
             ).href;
 
             window.open(approvalUrl, "_blank");
+
+            setTimeout(() => {
+                setLoading(false);
+                setShowPaymentModal(false);
+            }, 3000);
         } catch (e: any) {
-            console.error("Payment error:", e);
-        } finally {
-            setShowPaymentModal(false);
+            setErrorMessage("Payment failed");
         }
     };
 
@@ -124,11 +126,12 @@ function PaymentModal({
                                 </div>
                                 <button
                                     className="popupConfirmButton"
+                                    disabled={loading}
                                     onClick={() => {
                                         confirmPayment();
                                     }}
                                 >
-                                    Confirm payment
+                                    {loading ? "Processing ..." : "Confirm payment"}
                                 </button>
                             </div>
                         </div>
