@@ -1,4 +1,5 @@
 import axios from "axios";
+import {data} from "react-router-dom";
 
 const API_BASE_URL = "http://localhost:8080/api";
 
@@ -47,9 +48,9 @@ export const authAPI = {
 export const subscriptionAPI = {
     getSubscription: () => api.get("/subscription/current"),
     cancelSubscription: () => api.post(`/subscription/current/cancel`),
-    changeSubscription: (id) => api.post(`/subscription/${id}`),
+    cancelNextSubscription: () => api.post(`/subscription/next/cancel`),
     createSubscription: (data) => api.post(`/subscription`, data),
-    createFreeSubscription: () => api.post(`/subscription/free`)
+    createFreeSubscription: (data) => api.post(`/subscription/free`, data),
 };
 
 export const planAPI = {
