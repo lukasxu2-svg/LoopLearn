@@ -1,5 +1,6 @@
 package com.example.saastest.modules.subscription.controller;
 
+import com.example.saastest.modules.payment.paypal.subscriptions.dto.request.ReviseSubscriptionRequestBody;
 import com.example.saastest.modules.subscription.dto.request.CreateSubscriptionRequestBody;
 import com.example.saastest.modules.subscription.dto.response.CreateSubscriptionResponseBody;
 import com.example.saastest.modules.subscription.dto.response.getCurrentSubscriptionResponseBody;
@@ -31,8 +32,25 @@ public class SubscriptionController {
         service.cancelCurrentSubscription(benutzerId);
     }
 
+    @PostMapping("/next/cancel")
+    public Object cancelNextSubscription(Authentication authentication) {
+        Long benutzerId = Long.valueOf(authentication.getName());
+
+        return service.cancelNextSubscription(benutzerId);
+    }
+
     @PostMapping
-    public CreateSubscriptionResponseBody createSubscription(@RequestBody CreateSubscriptionRequestBody body) {
+    public Object createSubscription(@RequestBody CreateSubscriptionRequestBody body) {
         return service.createSubscription(body);
+    }
+
+    @PostMapping("/free")
+    public void createFreeSubscription(@RequestBody CreateSubscriptionRequestBody body) {
+        service.createFreeSubscription(body);
+    }
+
+    @PostMapping("/revise")
+    public void reviseSubscription(@RequestBody CreateSubscriptionRequestBody body) {
+        service.reviseSubscription(body);
     }
 }
