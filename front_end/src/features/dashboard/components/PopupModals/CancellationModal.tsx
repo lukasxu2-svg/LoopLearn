@@ -2,6 +2,7 @@ import React from "react";
 import {subscriptionAPI} from "../../../../../services/api";
 
 interface CancellationModalProps {
+    subscription;
     showCancelModal: boolean;
     setShowCancelModal: React.Dispatch<React.SetStateAction<boolean>>;
     loading: boolean;
@@ -10,6 +11,7 @@ interface CancellationModalProps {
 
 function CancellationModal(
     {
+        subscription,
         showCancelModal,
         setShowCancelModal,
         loading,
@@ -25,11 +27,15 @@ function CancellationModal(
             await subscriptionAPI.cancelSubscription();
             //setSuccessMessage("Subscription cancelled successfully");
             setShowCancelModal(false);
+            setTimeout(() => {
+                setLoading(false);
+                setShowCancelModal(false);
+            }, 3000);
         } catch (err: any) {
             //setError(err.response?.data?.message || "Failed to cancel subscription");
             console.error("Cancel error:", err);
         } finally {
-            setLoading(false);
+            window.location.reload();
         }
     };
 
@@ -40,7 +46,8 @@ function CancellationModal(
                     <div className="modal" onClick={(e) => e.stopPropagation()}>
                         <h2>Cancel Subscription</h2>
                         <p>
-                            Are you sure you want to cancel your subscription? You have
+                            Are you sure you want to cancel your subscription? Incoming subscriptions will also be
+                            cancelled. You have
                             access to the features till the cancellation date
                         </p>
                         <div className="modal-actions">

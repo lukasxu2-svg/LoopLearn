@@ -7,6 +7,8 @@ interface FreePlanModalProps {
     setShowFreePlanModal: React.Dispatch<React.SetStateAction<boolean>>,
     modalLoading: boolean,
     setModalLoading: React.Dispatch<React.SetStateAction<boolean>>,
+    user,
+    selectedPlan
 }
 
 function FreePlanModal(
@@ -15,7 +17,9 @@ function FreePlanModal(
         showFreePlanModal,
         setShowFreePlanModal,
         modalLoading,
-        setModalLoading
+        setModalLoading,
+        user,
+        selectedPlan
     }: FreePlanModalProps) {
 
     const handleFreePlan = async () => {
@@ -24,13 +28,25 @@ function FreePlanModal(
         }
         setModalLoading(true);
         try {
-            const response = subscriptionAPI.createFreeSubscription();
-
-            setShowFreePlanModal(false);
+            const body = {
+                simplePlanId: selectedPlan.id,
+                subscriber: {
+                    email_address: user?.email,
+                    name: {
+                        given_name: user?.firstName,
+                        surname: user?.lastName,
+                    },
+                },
+            };
+            const response = await subscriptionAPI.createFreeSubscription(body);
+            setTimeout(() => {
+                setModalLoading(false);
+                setShowFreePlanModal(false);
+            }, 3000);
         } catch (e) {
 
         } finally {
-            setModalLoading(false);
+            window.location.reload();
         }
     }
 

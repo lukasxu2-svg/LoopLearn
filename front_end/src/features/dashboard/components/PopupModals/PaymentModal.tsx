@@ -9,6 +9,7 @@ interface User {
 }
 
 interface PaymentModalProps {
+    subscription;
     showPaymentModal: boolean;
     setShowPaymentModal: (v: boolean) => void;
     selectedPlan: any;
@@ -18,6 +19,7 @@ interface PaymentModalProps {
 }
 
 function PaymentModal({
+                          subscription,
                           showPaymentModal,
                           setShowPaymentModal,
                           selectedPlan,
@@ -38,7 +40,11 @@ function PaymentModal({
                     },
                 },
             };
-            const response = await subscriptionAPI.createSubscription(body);
+
+            let response;
+            response = await subscriptionAPI.createSubscription(body);
+
+
             const approvalUrl = response.data.links.find(
                 (link: any) => link.rel === "approve",
             ).href;
@@ -90,6 +96,7 @@ function PaymentModal({
                                     </label>
                                 </div>
                                 <p className="popupNote">
+                                    Upgrading/Downgrading takes place at the next billing cycle.
                                     Your subscription renews monthly unless you cancel before the
                                     next billing date.
                                 </p>
