@@ -26,23 +26,23 @@ public class PayPalSubscriptionController {
     @PostMapping
     public PaypalCreateSubscriptionResponseBody createSubscription(
             @RequestBody PaypalCreateSubscriptionRequestBody requestBody) {
-        return service.createSubscription(requestBody);
+        return service.paypalCreateSubscription(requestBody);
     }
 
     @GetMapping
     public ListSubscriptionsResponseBody listSubscriptions() {
-        return service.listSubscriptions();
+        return service.paypalListSubscriptions();
     }
 
     @PostMapping("/{subscriptionId}")
     public Object updateSubscription(@PathVariable String subscriptionId,
-            @RequestBody UpdateSubscriptionRequestBody requestBody) {
-        return service.updateSubscription(subscriptionId, requestBody);
+                                     @RequestBody UpdateSubscriptionRequestBody requestBody) {
+        return service.paypalUpdateSubscription(subscriptionId, requestBody);
     }
 
     @PostMapping("/{subscriptionId}/cancel")
     public Object cancelSubscription(@PathVariable String subscriptionId,
-            @RequestBody CancelSubscriptionRequestBody requestBody) {
-        return service.cancelSubscription(subscriptionId, requestBody);
+                                     @RequestBody CancelSubscriptionRequestBody requestBody) {
+        return service.paypalCancelSubscription(subscriptionId, requestBody);
     }
 }
