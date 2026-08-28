@@ -41,11 +41,8 @@ public abstract class BaseService {
                 .retrieve()
                 .onStatus(
                         HttpStatusCode::isError,
-                        response -> response.bodyToMono(String.class)
-                                .flatMap(body -> {
-                                    System.out.println("PayPal error: " + body);
-                                    return Mono.error(new RuntimeException(body));
-                                })
+                        response -> response.createException()
+                                .flatMap(Mono::error)
                 )
                 .bodyToMono(responseType)
                 .block();
@@ -55,7 +52,7 @@ public abstract class BaseService {
         if (tokenIsExpired()) {
             refreshToken();
         }
-
+        
         return webClient.post()
                 .uri(uri)
                 .headers(header -> {
