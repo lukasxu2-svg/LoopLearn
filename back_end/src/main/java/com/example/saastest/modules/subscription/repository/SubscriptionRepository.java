@@ -1,6 +1,5 @@
 package com.example.saastest.modules.subscription.repository;
 
-import com.example.saastest.modules.benutzer.entity.Benutzer;
 import com.example.saastest.modules.payment.paypal.subscriptions.dto.enums.SubscriptionStatusDto;
 import com.example.saastest.modules.subscription.entity.Subscription;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -15,6 +15,8 @@ public class Subscription {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    private String paypalRequestId;
+
     private String subscriptionId;
 
     @ManyToOne
@@ -42,12 +44,13 @@ public class Subscription {
 
     private boolean canceled;
 
-
     public Subscription() {
     }
 
-    public Subscription(String subscriptionId, Benutzer benutzer, String planId, PlanType planType, SubscriptionStatusDto subStatus, Instant periodStart, Instant periodEnd) {
+    public Subscription(String subscriptionId, String paypalRequestId, Benutzer benutzer, String planId,
+                        PlanType planType, SubscriptionStatusDto subStatus, Instant periodStart, Instant periodEnd) {
         this.planType = planType;
+        this.paypalRequestId = paypalRequestId;
         this.subscriptionId = subscriptionId;
         this.benutzer = benutzer;
         this.planId = planId;
@@ -64,6 +67,10 @@ public class Subscription {
 
     public Long getId() {
         return id;
+    }
+
+    public String getPaypalRequestId() {
+        return paypalRequestId;
     }
 
     public String getSubscriptionId() {
@@ -107,8 +114,13 @@ public class Subscription {
     }
 
     public void setCanceled() {
-        this.subStatus = SubscriptionStatusDto.CANCELLED;
         this.canceled = true;
+    }
+
+    public void setCancelAll() {
+        this.canceled = true;
+        this.setSubStatus(SubscriptionStatusDto.CANCELLED);
+        this.nextSubscription = null;
     }
 
     public void setNextSubscription(Subscription nextSubscription) {
