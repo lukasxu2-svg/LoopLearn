@@ -15,7 +15,8 @@ public record getCurrentSubscriptionResponseBody(
         Instant periodStart,
         Instant periodEnd,
         boolean cancelled,
-        getCurrentSubscriptionResponseBody nextSubscription
+        getCurrentSubscriptionResponseBody nextSubscription,
+        Integer rank
 ) {
     public getCurrentSubscriptionResponseBody(Subscription subscription, Plan plan, getCurrentSubscriptionResponseBody nextSubscription) {
         this(
@@ -25,7 +26,8 @@ public record getCurrentSubscriptionResponseBody(
                 subscription.getPeriodStart(),
                 subscription.getPeriodEnd(),
                 subscription.isCanceled(),
-                nextSubscription
+                nextSubscription,
+                plan.getRank()
         );
     }
 }
