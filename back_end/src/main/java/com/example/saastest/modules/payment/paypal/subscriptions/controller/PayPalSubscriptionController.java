@@ -1,7 +1,5 @@
 package com.example.saastest.modules.payment.paypal.subscriptions.controller;
 
-import com.example.saastest.modules.payment.paypal.subscriptions.dto.request.PaypalCreateSubscriptionRequestBody;
-import com.example.saastest.modules.payment.paypal.subscriptions.dto.response.PaypalCreateSubscriptionResponseBody;
 import com.example.saastest.modules.payment.paypal.subscriptions.dto.request.CancelSubscriptionRequestBody;
 import com.example.saastest.modules.payment.paypal.subscriptions.dto.request.UpdateSubscriptionRequestBody;
 import com.example.saastest.modules.payment.paypal.subscriptions.dto.response.ListSubscriptionsResponseBody;
@@ -23,11 +21,6 @@ public class PayPalSubscriptionController {
         this.service = service;
     }
 
-    @PostMapping
-    public PaypalCreateSubscriptionResponseBody createSubscription(
-            @RequestBody PaypalCreateSubscriptionRequestBody requestBody) {
-        return service.paypalCreateSubscription(requestBody);
-    }
 
     @GetMapping
     public ListSubscriptionsResponseBody listSubscriptions() {

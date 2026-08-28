@@ -1,4 +1,10 @@
 package com.example.saastest.modules.payment.paypal.subscriptions.dto.response;
 
-public record ReviseSubscriptionResponseBody() {
+import com.example.saastest.modules.payment.paypal.dto.LinkDto;
+
+import java.util.List;
+
+public record ReviseSubscriptionResponseBody(
+        List<LinkDto> links
+) {
 }
