@@ -6,6 +6,8 @@ import com.example.saastest.modules.payment.paypal.subscriptions.dto.PaymentPref
 import com.example.saastest.modules.payment.paypal.subscriptions.dto.enums.SubscriptionStatusDto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
 public record GetSubscriptionByIdResponseBody(
         String id,
         String plan_id,
@@ -21,6 +23,6 @@ public record GetSubscriptionByIdResponseBody(
 
         String create_time,
 
-        LinkDto links
+        List<LinkDto> links
 ) {
 }
