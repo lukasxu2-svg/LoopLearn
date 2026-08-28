@@ -12,6 +12,7 @@ import com.example.saastest.modules.plan.enums.PlanType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 
@@ -30,6 +31,7 @@ public class AuthService {
         this.jwtService = jwtService;
     }
 
+    @Transactional
     public LoginResponseBody login(LoginRequestBody requestBody) {
         Benutzer benutzer = benutzerRepository.findByEmail(requestBody.email())
                 .orElseThrow(() -> new RuntimeException("Invalid Email"));
@@ -47,6 +49,7 @@ public class AuthService {
                 refreshTimer.toSeconds());
     }
 
+    @Transactional
     public RegisterResponseBody register(RegisterRequestBody requestBody) {
         if (benutzerRepository.findByEmail(requestBody.email()).isPresent()) {
             throw new RuntimeException("User already exists");

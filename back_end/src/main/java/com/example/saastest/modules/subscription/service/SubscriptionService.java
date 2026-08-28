@@ -8,7 +8,9 @@ import com.example.saastest.modules.payment.paypal.subscriptions.dto.enums.Subsc
 import com.example.saastest.modules.payment.paypal.subscriptions.dto.request.CancelSubscriptionRequestBody;
 import com.example.saastest.modules.payment.paypal.subscriptions.dto.request.PaypalCreateSubscriptionRequestBody;
 import com.example.saastest.modules.payment.paypal.subscriptions.dto.request.ReviseSubscriptionRequestBody;
+import com.example.saastest.modules.payment.paypal.subscriptions.dto.response.GetSubscriptionByIdResponseBody;
 import com.example.saastest.modules.payment.paypal.subscriptions.dto.response.PaypalCreateSubscriptionResponseBody;
+import com.example.saastest.modules.payment.paypal.subscriptions.dto.response.ReviseSubscriptionResponseBody;
 import com.example.saastest.modules.payment.paypal.subscriptions.service.PayPalSubscriptionService;
 import com.example.saastest.modules.plan.entity.Plan;
 import com.example.saastest.modules.plan.enums.PlanType;
@@ -19,10 +21,15 @@ import com.example.saastest.modules.subscription.dto.response.getCurrentSubscrip
 import com.example.saastest.modules.subscription.entity.Subscription;
 import com.example.saastest.modules.subscription.repository.SubscriptionRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class SubscriptionService {
@@ -74,14 +81,13 @@ public class SubscriptionService {
         Subscription subscription = subscriptionRepository.findByBenutzer_IdAndSubStatus(benutzerId, SubscriptionStatusDto.ACTIVE)
                 .orElseThrow(() -> new RuntimeException("No active subscription found"));
 
-        if (subscription.getPlanType().equals(PlanType.FREE)) {
-            subscription.setSubStatus(SubscriptionStatusDto.CANCELLED);
-            subscription.setCanceled();
-            subscriptionRepository.save(subscription);
-        } else {
+        if (!subscription.getPlanType().equals(PlanType.FREE)) {
             String subId = subscription.getSubscriptionId();
             CancelSubscriptionRequestBody requestBody = new CancelSubscriptionRequestBody("Cancel");
             payPalService.paypalCancelSubscription(subId, requestBody);
+        } else {
+            subscription.setCancelAll();
+            subscriptionRepository.save(subscription);
         }
     }
 
@@ -89,10 +95,13 @@ public class SubscriptionService {
         Subscription currentSubscription = subscriptionRepository.findByBenutzer_IdAndSubStatus(benutzerId, SubscriptionStatusDto.ACTIVE)
                 .orElseThrow(() -> new RuntimeException("No active subscription found"));
 
+        //Revise because current subscription plan type was changed
+        //This simply reverts it
         return payPalService.paypalReviseSubscription(currentSubscription.getSubscriptionId(), new ReviseSubscriptionRequestBody(currentSubscription.getPlanId()));
     }
 
 
+    @Transactional
     public void createFreeSubscription(CreateSubscriptionRequestBody requestBody) {
         Benutzer benutzer = benutzerRepository.findByEmail(requestBody.subscriber().email_address()).orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -101,53 +110,121 @@ public class SubscriptionService {
     }
 
 
+    @Transactional
     public Object createSubscription(CreateSubscriptionRequestBody requestBody) {
         Plan plan = planRepository.findById(Long.parseLong(requestBody.simplePlanId())).orElseThrow(() -> new RuntimeException("Plan not found"));
         String planId = plan.getPlanId();
 
+        //Lock to one instance
         Benutzer benutzer = benutzerRepository.findByEmail(requestBody.subscriber().email_address()).orElseThrow(() -> new RuntimeException("User not found"));
 
-        Optional<Subscription> currentSubscription = subscriptionRepository.findByBenutzer_IdAndSubStatus(benutzer.getId(), SubscriptionStatusDto.ACTIVE);
+        Optional<Subscription> activeSubscription = subscriptionRepository.findByBenutzer_IdAndSubStatus(benutzer.getId(), SubscriptionStatusDto.ACTIVE);
+        Optional<Subscription> pendingSubscription = subscriptionRepository.findByBenutzer_IdAndSubStatus(benutzer.getId(), SubscriptionStatusDto.APPROVAL_PENDING);
+
+        if ((activeSubscription.isPresent() && !activeSubscription.get().getPlanType().equals(PlanType.FREE))) {
+            throw new IllegalStateException("Pending Subscription already exists");
+        }
+
+        if (pendingSubscription.isPresent() && !plan.getPlanType().equals(pendingSubscription.get().getPlanType())) {
+            throw new IllegalStateException("Pending subscription of type " + pendingSubscription.get().getPlanType() + "already exists");
+        }
+
+
+        if (pendingSubscription.isPresent() && plan.getPlanType().equals(pendingSubscription.get().getPlanType())) {
+            return restartPendingSubscription(pendingSubscription.get());
+        }
+
+        if (plan.getPlanType().equals(PlanType.FREE)) {
+            Subscription subscription = new Subscription(benutzer, PlanType.FREE, SubscriptionStatusDto.ACTIVE);
+            subscriptionRepository.save(subscription);
+            return null;
+        }
 
         //Create Paypal subscription if no subscription exists or plan type is free
-        if (currentSubscription.isEmpty() || currentSubscription.get().getPlanType().equals(PlanType.FREE)) {
-            PaypalCreateSubscriptionRequestBody paypalBody = new PaypalCreateSubscriptionRequestBody(planId, requestBody.subscriber());
-            PaypalCreateSubscriptionResponseBody paypalResponse = payPalService.paypalCreateSubscription(paypalBody);
+        String requestId = pendingSubscription.isEmpty() ? UUID.randomUUID().toString() : pendingSubscription.get().getPaypalRequestId();
 
-            //Create Subscription entity
-            if (paypalResponse.status() == SubscriptionStatusDto.APPROVAL_PENDING) {
-                Instant periodStart = OffsetDateTime.parse(paypalResponse.createTime()).toInstant();
-                Instant periodEnd = OffsetDateTime.parse(paypalResponse.createTime()).plusMonths(1).toInstant();
+        PaypalCreateSubscriptionRequestBody paypalBody = new PaypalCreateSubscriptionRequestBody(planId, requestBody.subscriber());
+        PaypalCreateSubscriptionResponseBody paypalResponse = payPalService.paypalCreateSubscription(paypalBody, requestId);
 
-                Subscription subscription = new Subscription(paypalResponse.id(), benutzer, planId, plan.getPlanType(), SubscriptionStatusDto.APPROVAL_PENDING, periodStart, periodEnd);
 
-                subscriptionRepository.save(subscription);
+        if (paypalResponse.status() != SubscriptionStatusDto.APPROVAL_PENDING) {
+            throw new RuntimeException("PayPal could not create a subscription");
+        }
+
+        //Create Subscription entity
+        Instant periodStart = OffsetDateTime.parse(paypalResponse.createTime()).toInstant();
+        Instant periodEnd = OffsetDateTime.parse(paypalResponse.createTime()).plusMonths(1).toInstant();
+
+        Subscription subscription = new Subscription(
+                paypalResponse.id(),
+                requestId,
+                benutzer,
+                planId,
+                plan.getPlanType(),
+                SubscriptionStatusDto.APPROVAL_PENDING,
+                periodStart,
+                periodEnd);
+
+        subscriptionRepository.save(subscription);
+
+        CreateSubscriptionResponseBody response = new CreateSubscriptionResponseBody(paypalResponse.links());
+        return response;
+    }
+
+    private Object restartPendingSubscription(Subscription pendingSubscription) {
+        GetSubscriptionByIdResponseBody response;
+        try {
+            response = payPalService.getSubscriptionById(pendingSubscription.getSubscriptionId());
+        } catch (WebClientResponseException e) {
+            //Set pending subscription to canceled only if paypal could not find it
+            if (e.getStatusCode().value() != 404) {
+                throw new IllegalStateException("Getting subscription by id failed");
             }
-            CreateSubscriptionResponseBody response = new CreateSubscriptionResponseBody(paypalResponse.links());
-            return response;
-        } else {
-            Plan currentPlan = planRepository.findByPlanType(currentSubscription.get().getPlanType()).orElseThrow(() -> new RuntimeException("Plan not found"));
+            pendingSubscription.setCancelAll();
+            subscriptionRepository.save(pendingSubscription);
+            throw new IllegalStateException("PayPal could not find pending subscription");
+        }
 
-            //Do nothing if the to created plan has same rank as current one
-            if (plan.getRank().equals(currentPlan.getRank())) {
-                return null;
+        switch (response.status()) {
+            case SubscriptionStatusDto.ACTIVE: {
+                pendingSubscription.setSubStatus(SubscriptionStatusDto.ACTIVE);
+                subscriptionRepository.save(pendingSubscription);
+                throw new IllegalStateException("Pending subscription was already active");
             }
-            ReviseSubscriptionRequestBody body = new ReviseSubscriptionRequestBody(plan.getPlanId());
-
-            return payPalService.paypalReviseSubscription(currentSubscription.get().getSubscriptionId(), body);
+            case SubscriptionStatusDto.APPROVAL_PENDING: {
+                return new CreateSubscriptionResponseBody(response.links());
+            }
+            case SubscriptionStatusDto.CANCELLED: {
+                pendingSubscription.setCancelAll();
+                subscriptionRepository.save(pendingSubscription);
+                throw new IllegalStateException("Pending subscription was already cancelled");
+            }
+            default: {
+                throw new IllegalStateException("Unexpected subscription state");
+            }
         }
     }
 
-    public void reviseSubscription(CreateSubscriptionRequestBody body) {
-        Plan plan = planRepository.findById(Long.parseLong(body.simplePlanId())).orElseThrow(() -> new RuntimeException("Plan not found"));
-
+    @Transactional
+    public ReviseSubscriptionResponseBody reviseSubscription(CreateSubscriptionRequestBody body) {
         Benutzer benutzer = benutzerRepository.findByEmail(body.subscriber().email_address()).orElseThrow(() -> new RuntimeException("User not found"));
-
-        Subscription oldSubscription = subscriptionRepository.findByBenutzer_IdAndSubStatus(benutzer.getId(), SubscriptionStatusDto.ACTIVE)
+        Subscription activeSubscription = subscriptionRepository.findByBenutzer_IdAndSubStatus(benutzer.getId(), SubscriptionStatusDto.ACTIVE)
                 .orElseThrow(() -> new RuntimeException("No active subscription found"));
 
+        Plan currentPlan = planRepository.findByPlanType(activeSubscription.getPlanType()).orElseThrow(() -> new RuntimeException("Plan not found"));
+        Plan plan = planRepository.findById(Long.parseLong(body.simplePlanId())).orElseThrow(() -> new RuntimeException("Plan not found"));
+
+        //Throw error if user tries to change the plan of incoming subscription to the same as current one
+        if (plan.getRank().equals(currentPlan.getRank())) {
+            throw new IllegalStateException("The rank of the new subscription is the same as the old one");
+        }
+
+        if (activeSubscription.getNextSubscription() != null && activeSubscription.getNextSubscription().getPlanType().equals(plan.getPlanType())) {
+            throw new IllegalStateException("The rank of the new subscription is the same as the incoming one");
+        }
 
         ReviseSubscriptionRequestBody requestBody = new ReviseSubscriptionRequestBody(plan.getPlanId());
-        payPalService.paypalReviseSubscription(oldSubscription.getSubscriptionId(), requestBody);
+
+        return payPalService.paypalReviseSubscription(activeSubscription.getSubscriptionId(), requestBody);
     }
 }

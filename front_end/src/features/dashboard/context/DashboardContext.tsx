@@ -1,14 +1,16 @@
 import React, {createContext, useContext, useState} from "react";
 
-interface NotificationContextValue {
+interface DashboardContextValue {
+    subscription;
     successMessage: string;
     errorMessage: string;
+    setSubscription;
     setSuccessMessage: (message: string) => void;
     setErrorMessage: (message: string) => void;
     clearNotifications: () => void;
 }
 
-const NotificationContext = createContext<NotificationContextValue | undefined>(
+const DashboardContext = createContext<DashboardContextValue | undefined>(
     undefined,
 );
 
@@ -19,6 +21,7 @@ export function NotificationProvider({
 }) {
     const [successMessage, setSuccessMessageState] = useState("");
     const [errorMessage, setErrorMessageState] = useState("");
+    const [subscription, setSubscription] = useState("")
 
     const setSuccessMessage = (message: string) => {
         setSuccessMessageState(message);
@@ -44,26 +47,28 @@ export function NotificationProvider({
     };
 
     return (
-        <NotificationContext.Provider
+        <DashboardContext.Provider
             value={{
+                subscription,
                 successMessage,
                 errorMessage,
+                setSubscription,
                 setSuccessMessage,
                 setErrorMessage,
                 clearNotifications,
             }}
         >
             {children}
-        </NotificationContext.Provider>
+        </DashboardContext.Provider>
     );
 }
 
-export function useNotifications() {
-    const context = useContext(NotificationContext);
+export function useDashboardContext() {
+    const context = useContext(DashboardContext);
 
     if (!context) {
         throw new Error(
-            "useNotifications must be used within NotificationProvider",
+            "useDashboardContext must be used within NotificationProvider",
         );
     }
 
