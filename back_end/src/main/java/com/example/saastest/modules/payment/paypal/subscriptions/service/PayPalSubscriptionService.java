@@ -8,6 +8,7 @@ import com.example.saastest.modules.payment.paypal.subscriptions.dto.response.Pa
 import com.example.saastest.modules.payment.paypal.subscriptions.dto.request.CancelSubscriptionRequestBody;
 import com.example.saastest.modules.payment.paypal.subscriptions.dto.request.UpdateSubscriptionRequestBody;
 import com.example.saastest.modules.payment.paypal.subscriptions.dto.response.ListSubscriptionsResponseBody;
+import com.example.saastest.modules.payment.paypal.subscriptions.dto.response.ReviseSubscriptionResponseBody;
 import com.example.saastest.modules.payment.service.BaseService;
 import com.example.saastest.modules.plan.repository.PlanRepository;
 import org.springframework.http.HttpHeaders;
@@ -25,9 +26,8 @@ public class PayPalSubscriptionService extends BaseService {
         super(tokenService, webClient);
     }
 
-    public PaypalCreateSubscriptionResponseBody paypalCreateSubscription(PaypalCreateSubscriptionRequestBody requestBody) {
+    public PaypalCreateSubscriptionResponseBody paypalCreateSubscription(PaypalCreateSubscriptionRequestBody requestBody, String requestId) {
         String uri = baseSandboxUrl + "/v1/billing/subscriptions";
-        String requestId = UUID.randomUUID().toString();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -49,7 +49,7 @@ public class PayPalSubscriptionService extends BaseService {
     }
 
     public GetSubscriptionByIdResponseBody getSubscriptionById(String subscriptionId) {
-        String uri = baseSandboxUrl + "/v1/billing/subscriptions" + subscriptionId;
+        String uri = baseSandboxUrl + "/v1/billing/subscriptions/" + subscriptionId;
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -77,13 +77,23 @@ public class PayPalSubscriptionService extends BaseService {
         return post(uri, headers, requestBody, Object.class);
     }
 
-    public Object paypalReviseSubscription(String subscriptionId, ReviseSubscriptionRequestBody requestBody) {
+    public ReviseSubscriptionResponseBody paypalReviseSubscription(String subscriptionId, ReviseSubscriptionRequestBody requestBody) {
         String uri = baseSandboxUrl + String.format("/v1/billing/subscriptions/%s/revise", subscriptionId);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
-        return post(uri, headers, requestBody, Object.class);
+        return post(uri, headers, requestBody, ReviseSubscriptionResponseBody.class);
+    }
+
+    public Object paypalRefund(String captureId) {
+        String uri = baseSandboxUrl + String.format("v2/payments/captures/%s/refund", captureId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+        return post(uri, headers, Object.class);
     }
 }
