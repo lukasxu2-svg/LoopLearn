@@ -1,10 +1,11 @@
 import React, {createContext, useContext, useState} from "react";
+import {subscriptionAPI} from "../../../services/api";
 
 interface DashboardContextValue {
     subscription;
     successMessage: string;
     errorMessage: string;
-    setSubscription;
+    loadSubscriptionData;
     setSuccessMessage: (message: string) => void;
     setErrorMessage: (message: string) => void;
     clearNotifications: () => void;
@@ -46,13 +47,22 @@ export function NotificationProvider({
         setErrorMessageState("");
     };
 
+    const loadSubscriptionData = async () => {
+        try {
+            const subResponse = await subscriptionAPI.getSubscription();
+            setSubscription(subResponse.data);
+        } catch (err) {
+            throw new Error("Failed to load subscription data");
+        }
+    }
+
     return (
         <DashboardContext.Provider
             value={{
                 subscription,
                 successMessage,
                 errorMessage,
-                setSubscription,
+                loadSubscriptionData,
                 setSuccessMessage,
                 setErrorMessage,
                 clearNotifications,
