@@ -51,6 +51,7 @@ export const subscriptionAPI = {
     cancelNextSubscription: () => api.post(`/subscription/next/cancel`),
     createSubscription: (data) => api.post(`/subscription`, data),
     createFreeSubscription: (data) => api.post(`/subscription/free`, data),
+    reviseSubscription: (data) => api.post(`/subscription/revise`, data)
 };
 
 export const planAPI = {
