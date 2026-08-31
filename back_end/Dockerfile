@@ -2,9 +2,10 @@ FROM maven:3.9.9-eclipse-temurin-21 AS build
 WORKDIR /workspace/app
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
-RUN chmod +x mvnw && ./mvnw -q -DskipTests dependency:go-offline
+RUN chmod +x mvnw
 COPY src ./src
-RUN ./mvnw -q -DskipTests package
+RUN --mount=type=cache,target=/root/.m2 \
+    ./mvnw -DskipTests package
 
 
 FROM eclipse-temurin:21-jdk 

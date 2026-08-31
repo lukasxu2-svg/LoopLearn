@@ -21,9 +21,6 @@ services:
       - "8080:8080"
     env_file:
       - ./back_end/.env
-    environment:
-      DB_HOST: db
-      DB_PORT: 5432
     command: ./mvnw spring-boot:run
     depends_on:
       db:
