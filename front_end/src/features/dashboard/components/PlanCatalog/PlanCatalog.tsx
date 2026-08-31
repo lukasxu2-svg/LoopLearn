@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {planAPI} from "../../../../services/api";
-import {useNotifications} from "../../../../context/NotificationContext";
+import {useDashboardContext} from "../../context/DashboardContext";
 
 interface PlanCatalogType {
     plans;
@@ -21,6 +21,21 @@ function PlanCatalog({
                          setSelectedPlan,
                      }: PlanCatalogType) {
 
+    const showText = (plan): String => {
+        if (subscription === null) {
+            return "Choose plan"
+        }
+
+        if (subscription.rank > plan.rank) {
+            return "Downgrade plan"
+        }
+
+        if (subscription.rank < plan.rank) {
+            return "Upgrade Plan"
+        }
+        return "Choose plan";
+    }
+
     return (
         <>
             {plans && plans.length > 0 && (
@@ -37,7 +52,8 @@ function PlanCatalog({
                                     className="upgrade-button"
                                     disabled={
                                         subscription?.planType === plan.planType ||
-                                        subscription?.cancelled
+                                        subscription?.cancelled ||
+                                        subscription?.nextSubscription?.planType === plan.planType
                                     }
                                     onClick={() => {
                                         setSelectedPlan(plan);
@@ -46,11 +62,11 @@ function PlanCatalog({
                                         } else if (subscription?.planType === plan.planType) {
                                             setShowCancelModal(true);
                                         } else {
-                                            setShowPaymentModal(true); //TODO Implement upgrade downgrade
+                                            setShowPaymentModal(true);
                                         }
                                     }}
                                 >
-                                    {"Choose Plan"}
+                                    {showText(plan)}
                                 </button>
                             </div>
                         ))}
