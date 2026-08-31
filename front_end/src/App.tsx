@@ -5,13 +5,13 @@ import {
     Navigate,
 } from "react-router-dom";
 import {useState, useEffect, JSX} from "react";
-import LoginPage from "./pages/LoginPage";
-import SignupPage from "./pages/SignupPage";
-import HomePage from "./pages/HomePage";
+import LoginPage from "./features/auth/LoginPage";
+import SignupPage from "./features/auth/SignupPage";
+import HomePage from "./features/homepage/HomePage";
 import DashboardPage from "./features/dashboard/DashboardPage";
-import PrivateRoute from "./components/PrivateRoute";
+import PrivateRoute from "./routes/PrivateRoute";
 import {NotificationProvider} from "./features/dashboard/context/DashboardContext";
-import "./App.css";
+import "./styles/App.css";
 
 function App(): JSX.Element {
     const [isAuthenticated, setIsAuthenticated] = useState(false);

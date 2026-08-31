@@ -2,7 +2,7 @@ import React, {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {planAPI, subscriptionAPI} from "../../services/api.js";
 import "./styles/Dashboard.css";
-import {isTokenExpired} from "../../auth/authUtils.js";
+import {isTokenExpired} from "../auth/utils/authUtils.js";
 import PlanCatalog from "./components/PlanCatalog/PlanCatalog";
 import SubscriptionModal from "./components/SubscriptionModal/SubscriptionModal";
 import CancellationModal from "./components/PopupModals/CancellationModal";
