@@ -1,6 +1,6 @@
 import React from "react";
 import {subscriptionAPI} from "../../../../services/api";
-import {useNotifications} from "../../../../context/NotificationContext";
+import {useDashboardContext} from "../../context/DashboardContext";
 
 interface CancelNextModalProps {
     showCancelNextModal: boolean;
@@ -15,7 +15,7 @@ function CancelNextModal({
                              loading,
                              setLoading,
                          }: CancelNextModalProps) {
-    const {setSuccessMessage, setErrorMessage} = useNotifications();
+    const {setSuccessMessage, setErrorMessage} = useDashboardContext();
 
     const handleCancelNextSubscription = async () => {
         setLoading(true);
@@ -28,13 +28,14 @@ function CancelNextModal({
 
             window.open(approvalUrl, "_blank");
 
-            setSuccessMessage("Next subscription cancelled successfully");
+            setSuccessMessage("Cancellation processed. Might take some time");
+        } catch (err: any) {
+            setErrorMessage("Failed to cancel next subscription");
+        } finally {
             setTimeout(() => {
                 setLoading(false);
                 setShowCancelNextModal(false);
             }, 3000);
-        } catch (err: any) {
-            setErrorMessage("Failed to cancel next subscription");
         }
     };
 

@@ -1,6 +1,6 @@
 import React from "react";
 import {subscriptionAPI} from "../../../../services/api";
-import {useNotifications} from "../../../../context/NotificationContext";
+import {useDashboardContext} from "../../context/DashboardContext";
 
 interface CancellationModalProps {
     showCancelModal: boolean;
@@ -17,24 +17,21 @@ function CancellationModal(
         setLoading
     }: CancellationModalProps
 ) {
-    const {setSuccessMessage, setErrorMessage} = useNotifications();
+    const {loadSubscriptionData, setSuccessMessage, setErrorMessage} = useDashboardContext();
 
     const handleCancelSubscription = async () => {
         setLoading(true);
         try {
             await subscriptionAPI.cancelSubscription();
 
-            setSuccessMessage("Subscription cancelled successfully");
+            await loadSubscriptionData();
 
-            setShowCancelModal(false);
-            setTimeout(() => {
-                setLoading(false);
-                setShowCancelModal(false);
-            }, 3000);
+            setSuccessMessage("Cancellation processed. Might take some time");
         } catch (err: any) {
             setErrorMessage("Failed to cancel subscription");
         } finally {
-            window.location.reload();
+            setShowCancelModal(false);
+            setLoading(false);
         }
     };
 
@@ -43,7 +40,7 @@ function CancellationModal(
             {showCancelModal && (
                 <div className="modal-overlay" onClick={() => setShowCancelModal(false)}>
                     <div className="modal" onClick={(e) => e.stopPropagation()}>
-                        <h2>Cancel Subscription</h2>
+                        <h2>Cancel Current Subscription</h2>
                         <p>
                             Are you sure you want to cancel your subscription? Incoming subscriptions will also be
                             cancelled. You have
