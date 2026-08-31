@@ -55,6 +55,7 @@ public class PaypalWebhookService extends BaseService {
                 Optional<Subscription> activeSubscription = subscriptionRepository.findBySubStatus(SubscriptionStatusDto.ACTIVE);
                 Optional<Subscription> pendingSubscription = subscriptionRepository.findBySubStatus(SubscriptionStatusDto.APPROVAL_PENDING);
 
+                //Cancel subscription in db if active plan already exists or pending subscription with different id exists
                 if ((activeSubscription.isPresent() && !activeSubscription.get().getPlanType().equals(PlanType.FREE)) ||
                         (pendingSubscription.isPresent() && !pendingSubscription.get().getSubscriptionId().equals(subscriptionId))) {
                     payPalService.paypalCancelSubscription(

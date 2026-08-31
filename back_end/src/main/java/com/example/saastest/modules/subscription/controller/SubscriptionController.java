@@ -1,8 +1,7 @@
 package com.example.saastest.modules.subscription.controller;
 
-import com.example.saastest.modules.payment.paypal.subscriptions.dto.request.ReviseSubscriptionRequestBody;
+import com.example.saastest.modules.payment.paypal.subscriptions.dto.response.ReviseSubscriptionResponseBody;
 import com.example.saastest.modules.subscription.dto.request.CreateSubscriptionRequestBody;
-import com.example.saastest.modules.subscription.dto.response.CreateSubscriptionResponseBody;
 import com.example.saastest.modules.subscription.dto.response.getCurrentSubscriptionResponseBody;
 import com.example.saastest.modules.subscription.service.SubscriptionService;
 import org.springframework.security.core.Authentication;
@@ -44,13 +43,8 @@ public class SubscriptionController {
         return service.createSubscription(body);
     }
 
-    @PostMapping("/free")
-    public void createFreeSubscription(@RequestBody CreateSubscriptionRequestBody body) {
-        service.createFreeSubscription(body);
-    }
-
     @PostMapping("/revise")
-    public void reviseSubscription(@RequestBody CreateSubscriptionRequestBody body) {
-        service.reviseSubscription(body);
+    public ReviseSubscriptionResponseBody reviseSubscription(@RequestBody CreateSubscriptionRequestBody body) {
+        return service.reviseSubscription(body);
     }
 }
