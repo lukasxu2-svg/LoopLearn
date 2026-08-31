@@ -1,13 +1,15 @@
 import "../../styles/Popup.css";
 import {subscriptionAPI} from "../../../../services/api.js";
 import React from "react";
-import {useNotifications} from "../../../../context/NotificationContext";
+import {useDashboardContext} from "../../context/DashboardContext";
 import {User} from "../../DashboardPage";
 
 
 interface PaymentModalProps {
     showPaymentModal: boolean;
     setShowPaymentModal: (v: boolean) => void;
+    showFreePlanModal: boolean;
+    setShowFreePlanModal: (v: boolean) => void;
     selectedPlan: any;
     selectedPaymentMethod: string;
     setSelectedPaymentMethod: (m: string) => void;
@@ -19,6 +21,8 @@ interface PaymentModalProps {
 function PaymentModal({
                           showPaymentModal,
                           setShowPaymentModal,
+                          showFreePlanModal,
+                          setShowFreePlanModal,
                           selectedPlan,
                           selectedPaymentMethod,
                           setSelectedPaymentMethod,
@@ -26,38 +30,63 @@ function PaymentModal({
                           loading,
                           setLoading
                       }: PaymentModalProps) {
-    const {setSuccessMessage, setErrorMessage} = useNotifications();
+    const {subscription, loadSubscriptionData, setSuccessMessage, setErrorMessage} = useDashboardContext();
 
 
-    const confirmPayment = async () => {
+    const handlePayment = async () => {
         setLoading(true);
         try {
             const body = {
                 simplePlanId: selectedPlan.id,
                 subscriber: {
-                    email_address: user?.email,
+                    email_address: user.email,
                     name: {
-                        given_name: user?.firstName,
-                        surname: user?.lastName,
+                        given_name: user.firstName,
+                        surname: user.lastName,
                     },
                 },
             };
-            const response = await subscriptionAPI.createSubscription(body);
+            let response;
 
-            const approvalUrl = response.data.links.find(
+            if (!isNaN(Number(subscription.rank)) && subscription?.rank !== selectedPlan.rank) {
+                response = await reviseSubscription(body);
+            } else {
+                response = await createSubscription(body);
+            }
+
+            const approvalUrl = response.data?.links?.find(
                 (link: any) => link.rel === "approve",
             ).href;
 
-            window.open(approvalUrl, "_blank");
-
-            setTimeout(() => {
-                setLoading(false);
-                setShowPaymentModal(false);
-            }, 3000);
-        } catch (e: any) {
-            setErrorMessage("Payment failed");
+            if (approvalUrl) {
+                window.open(approvalUrl, "_blank");
+            }
+            await loadSubscriptionData();
+            setSuccessMessage("Subscription creation processed. May take a minute");
+        } catch (err: any) {
+            setErrorMessage(err.message || "Payment failed");
+        } finally {
+            setLoading(false);
+            setShowPaymentModal(false);
+            setShowFreePlanModal(false);
         }
     };
+
+    const reviseSubscription = async (body) => {
+        try {
+            return await subscriptionAPI.reviseSubscription(body);
+        } catch (e: any) {
+            throw new Error("Upgrading/Downgrading subscription failed");
+        }
+    }
+
+    const createSubscription = async (body) => {
+        try {
+            return await subscriptionAPI.createSubscription(body);
+        } catch (e: any) {
+            throw new Error("Creating subscription failed");
+        }
+    }
 
     return (
         <>
@@ -128,13 +157,43 @@ function PaymentModal({
                                     className="popupConfirmButton"
                                     disabled={loading}
                                     onClick={() => {
-                                        confirmPayment();
+                                        handlePayment();
                                     }}
                                 >
                                     {loading ? "Processing ..." : "Confirm payment"}
                                 </button>
                             </div>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {showFreePlanModal && (
+                <div className="modal-overlay" onClick={() => setShowFreePlanModal(false)}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()}>
+                        <h2>Choose Free Plan</h2>
+                        <p>
+                            {!subscription ? "Acknowledge to select the free plan? By agreeing you get access to the free plan" :
+                                "Ongoing subscription exists. It will automatically revert to the free plan after the duration of the paid subscription"}
+                        </p>
+                        {!subscription && (
+                            <div className="modal-actions">
+                                <button
+                                    className="modal-button cancel"
+                                    onClick={() => setShowFreePlanModal(false)}
+                                    disabled={loading}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    className="modal-button confirm"
+                                    onClick={() => handlePayment()}
+                                    disabled={loading}
+                                >
+                                    {loading ? "Processing..." : "Yes, Choose Free Plan"}
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
