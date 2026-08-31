@@ -29,7 +29,7 @@
 
 .popupEyebrow {
     margin: 0 0 6px;
-    color: #4f46e5;
+    color: var(--orange);
     font-size: 0.8rem;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -97,12 +97,12 @@
 }
 
 .payment-option.active {
-    border-color: #4f46e5;
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+    border-color: var(--orange);
+    box-shadow: 0 0 0 3px var(--light_orange);
 }
 
 .payment-option input {
-    accent-color: #4f46e5;
+    accent-color: var(--orange);
 }
 
 .payment-option strong {
@@ -150,7 +150,7 @@
     margin-top: 16px;
     border: none;
     border-radius: 10px;
-    background: #4f46e5;
+    background: var(--orange);
     color: #ffffff;
     padding: 12px 14px;
     font-weight: 600;
@@ -158,12 +158,12 @@
 }
 
 .popupConfirmButton:hover:not(:disabled) {
-    background: #4338ca;
+    background: #DC6B52FF;
 }
 
 .popupConfirmButton:disabled {
-    background: #c7d2fe;
-    color: #eef2ff;
+    background: var(--light_orange);
+    color: white;
     cursor: not-allowed;
     opacity: 0.8;
 }
