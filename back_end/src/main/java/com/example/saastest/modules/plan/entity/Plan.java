@@ -36,10 +36,12 @@ public class Plan {
     public Plan() {
     }
 
-    public Plan(PlanType planType, BigDecimal monthlyPrice, String planId) {
+    public Plan(PlanType planType, BigDecimal monthlyPrice, String planId, Integer rank, String productId) {
         this.planType = planType;
         this.monthlyPrice = monthlyPrice;
         this.planId = planId;
+        this.rank = rank;
+        this.productId = productId;
     }
 
     public void setPlanType(PlanType planType) {

@@ -134,4 +134,19 @@ public class Subscription {
     public void setPlanId(String planId) {
         this.planId = planId;
     }
+
+    @Override
+    public String toString() {
+        return "Subscription{" +
+                "id=" + id +
+                ", paypalRequestId='" + paypalRequestId + '\'' +
+                ", subscriptionId='" + subscriptionId + '\'' +
+                ", planId='" + planId + '\'' +
+                ", planType=" + planType +
+                ", subStatus=" + subStatus +
+                ", periodStart=" + periodStart +
+                ", periodEnd=" + periodEnd +
+                ", canceled=" + canceled +
+                '}';
+    }
 }
