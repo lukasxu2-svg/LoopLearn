@@ -20,7 +20,7 @@ services:
     ports:
       - "8080:8080"
     env_file:
-      - ./back_end/.env
+      - ./back_end/.env.dev
     command: ./mvnw spring-boot:run
     depends_on:
       db:
@@ -30,14 +30,14 @@ services:
     image: ngrok/ngrok:latest
     command: http backend:8080 --log stdout
     env_file:
-      - ./back_end/.env
+      - ./back_end/.env.dev
     depends_on:
       - backend
 
   db:
     image: postgres:17
     env_file:
-      - ./back_end/.env
+      - ./back_end/.env.dev
     ports:
       - "5432:5432"
     volumes:

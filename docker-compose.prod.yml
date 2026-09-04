@@ -5,6 +5,8 @@ services:
       context: ./front_end
       dockerfile: Dockerfile
     restart: unless-stopped
+    env_file:
+      - ./front_end/.env.production
     expose:
       - "80"
 
@@ -14,9 +16,8 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
-      - ./back_end/.env
+      - ./back_end/.env.prod
     environment:
-      DB_HOST: ${DB_HOST}
       DB_PORT: 5432
     expose:
       - "8080"
