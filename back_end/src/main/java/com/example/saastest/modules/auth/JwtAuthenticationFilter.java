@@ -30,6 +30,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
 
 
+        // Let CORS preflight requests pass through
+        if (request.getMethod().equalsIgnoreCase("OPTIONS")
+                || path.startsWith("/api/auth/")) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         // Skip JWT authentication for PayPal webhooks
         if (path.startsWith("/api/paypal/webhooks")) {
             filterChain.doFilter(request, response);
