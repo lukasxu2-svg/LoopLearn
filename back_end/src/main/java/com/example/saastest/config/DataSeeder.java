@@ -17,27 +17,35 @@ import java.util.List;
 public class DataSeeder {
 
     @Value("${paypal.product.id.free}")
+    private String freeProductId;
+
+    @Value("${paypal.plan.id.free}")
     private String freePlanId;
 
-    @Value("{paypal.product.id.basic}")
+    @Value("${paypal.product.id.basic}")
+    private String basicProductId;
+
+    @Value("${paypal.plan.id.basic}")
     private String basicPlanId;
 
-    @Value("{paypal.product.id.premium}")
+    @Value("${paypal.product.id.premium}")
+    private String premiumProductId;
+
+    @Value("${paypal.plan.id.premium}")
     private String premiumPlanId;
+
 
     @Bean
     CommandLineRunner seedDatabase(
-            PlanRepository planRepository,
-            BenutzerRepository userRepository,
-            PasswordEncoder passwordEncoder
+            PlanRepository planRepository
     ) {
         return args -> {
 
             if (planRepository.count() == 0) {
 
-                Plan free = new Plan(PlanType.FREE, new BigDecimal("0.0"), freePlanId);
-                Plan basic = new Plan(PlanType.BASIC, new BigDecimal("1.0"), basicPlanId);
-                Plan premium = new Plan(PlanType.PREMIUM, new BigDecimal("5.0"), premiumPlanId);
+                Plan free = new Plan(PlanType.FREE, new BigDecimal("0.0"), freePlanId, 1, freeProductId);
+                Plan basic = new Plan(PlanType.BASIC, new BigDecimal("1.0"), basicPlanId, 2, basicProductId);
+                Plan premium = new Plan(PlanType.PREMIUM, new BigDecimal("5.0"), premiumPlanId, 3, premiumProductId);
 
 
                 planRepository.saveAll(List.of(free, basic, premium));
