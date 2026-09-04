@@ -126,7 +126,7 @@ public class SubscriptionService {
         }
 
         if (pendingSubscription.isPresent() && !plan.getPlanType().equals(pendingSubscription.get().getPlanType())) {
-            throw new IllegalStateException("Pending subscription of type " + pendingSubscription.get().getPlanType() + "already exists");
+            throw new IllegalStateException("Pending subscription of type " + pendingSubscription.get().getPlanType() + " already exists");
         }
 
 
@@ -146,6 +146,7 @@ public class SubscriptionService {
         PaypalCreateSubscriptionRequestBody paypalBody = new PaypalCreateSubscriptionRequestBody(planId, requestBody.subscriber());
         PaypalCreateSubscriptionResponseBody paypalResponse = payPalService.paypalCreateSubscription(paypalBody, requestId);
 
+        System.out.println("------------" + paypalResponse + "-----------------");
 
         if (paypalResponse.status() != SubscriptionStatusDto.APPROVAL_PENDING) {
             throw new RuntimeException("PayPal could not create a subscription");
@@ -172,7 +173,7 @@ public class SubscriptionService {
     }
 
     private Object restartPendingSubscription(Subscription pendingSubscription) {
-        GetSubscriptionByIdResponseBody response;
+        GetSubscriptionByIdResponseBody response = null;
         try {
             response = payPalService.getSubscriptionById(pendingSubscription.getSubscriptionId());
         } catch (WebClientResponseException e) {
@@ -182,14 +183,17 @@ public class SubscriptionService {
             }
             pendingSubscription.setCancelAll();
             subscriptionRepository.save(pendingSubscription);
-            throw new IllegalStateException("PayPal could not find pending subscription");
         }
 
+        if (response == null) {
+            throw new IllegalStateException("PayPal response was null");
+        }
+        
         switch (response.status()) {
             case SubscriptionStatusDto.ACTIVE: {
                 pendingSubscription.setSubStatus(SubscriptionStatusDto.ACTIVE);
                 subscriptionRepository.save(pendingSubscription);
-                throw new IllegalStateException("Pending subscription was already active");
+                break;
             }
             case SubscriptionStatusDto.APPROVAL_PENDING: {
                 return new CreateSubscriptionResponseBody(response.links());
@@ -197,12 +201,18 @@ public class SubscriptionService {
             case SubscriptionStatusDto.CANCELLED: {
                 pendingSubscription.setCancelAll();
                 subscriptionRepository.save(pendingSubscription);
-                throw new IllegalStateException("Pending subscription was already cancelled");
+                break;
+            }
+            case SubscriptionStatusDto.EXPIRED: {
+                pendingSubscription.setCancelAll();
+                subscriptionRepository.save(pendingSubscription);
+                break;
             }
             default: {
                 throw new IllegalStateException("Unexpected subscription state");
             }
         }
+        return null;
     }
 
     @Transactional
