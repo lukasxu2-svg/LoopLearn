@@ -23,7 +23,7 @@ const videoCatalog = [
         tiers: [
             {
                 id: "basic",
-                label: "Basic",
+                label: "Free",
                 topics: [
                     {
                         id: "inheritance",
@@ -50,7 +50,7 @@ const videoCatalog = [
             },
             {
                 id: "advanced",
-                label: "Advanced",
+                label: "Basic",
                 topics: [
                     {
                         id: "streams",
@@ -110,7 +110,7 @@ const videoCatalog = [
         tiers: [
             {
                 id: "basic",
-                label: "Basic",
+                label: "Free",
                 topics: [
                     {
                         id: "variables",
@@ -137,7 +137,7 @@ const videoCatalog = [
             },
             {
                 id: "advanced",
-                label: "Advanced",
+                label: "Basic",
                 topics: [
                     {
                         id: "asyncawait",
