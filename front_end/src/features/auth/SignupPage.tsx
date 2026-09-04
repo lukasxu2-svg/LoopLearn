@@ -73,7 +73,7 @@ function SignupPage({setIsAuthenticated}: Props) {
                 password: formData.password,
             };
 
-            const response = await authAPI.signup(signupData);
+            const response = await authAPI.register(signupData);
             const {token, user} = response.data;
 
             localStorage.setItem("token", token);
