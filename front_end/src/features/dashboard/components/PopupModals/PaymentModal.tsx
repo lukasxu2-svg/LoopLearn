@@ -48,7 +48,7 @@ function PaymentModal({
             };
             let response;
 
-            if (!isNaN(Number(subscription.rank)) && subscription?.rank !== selectedPlan.rank) {
+            if (!isNaN(Number(subscription.rank)) && subscription?.rank !== selectedPlan.rank && subscription?.rank !== 1) {
                 response = await reviseSubscription(body);
             } else {
                 response = await createSubscription(body);
