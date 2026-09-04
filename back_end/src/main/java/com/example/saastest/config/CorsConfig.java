@@ -17,7 +17,9 @@ public class CorsConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(List.of(
-                "http://localhost:5174"
+                "http://localhost:5174",
+                "http://localhost:8080",
+                "https://container-service-1.pvyf760ggyfxm.eu-central-1.cs.amazonlightsail.com"
         ));
 
         configuration.setAllowedMethods(List.of(
