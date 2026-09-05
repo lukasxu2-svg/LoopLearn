@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
-import {planAPI, subscriptionAPI} from "../../services/api.js";
+import {planAPI, videoAPI} from "../../services/api.js";
 import "./styles/Dashboard.css";
 import {isTokenExpired} from "../auth/utils/authUtils.js";
 import PlanCatalog from "./components/PlanCatalog/PlanCatalog";
@@ -16,105 +16,6 @@ export interface User {
     lastName?: string;
 }
 
-const videoCatalog = [
-    {
-        key: "java",
-        label: "Java",
-        tiers: [
-            {
-                id: "basic",
-                label: "Free",
-                rank: 1,
-                topics: [
-                    {
-                        id: "inheritance",
-                        title: "Inheritance",
-                        duration: "04:20",
-                        src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-                        description: "Learn how classes inherit behavior and data in Java.",
-                    },
-                ],
-            },
-            {
-                id: "advanced",
-                label: "Basic",
-                rank: 2,
-                topics: [
-                    {
-                        id: "streams",
-                        title: "Streams",
-                        duration: "06:12",
-                        src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-                        description: "Use functional-style data processing to work with collections.",
-                    },
-                ],
-            },
-            {
-                id: "premium",
-                label: "Premium",
-                rank: 3,
-                topics: [
-                    {
-                        id: "microservices",
-                        title: "Microservices",
-                        duration: "08:15",
-                        src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-                        description: "Design service boundaries and resilient distributed systems.",
-                    },
-                ],
-            },
-        ],
-    },
-    {
-        key: "javascript",
-        label: "JavaScript",
-        tiers: [
-            {
-                id: "basic",
-                label: "Free",
-                rank: 1,
-                topics: [
-                    {
-                        id: "variables",
-                        title: "Variables",
-                        duration: "03:36",
-                        src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-                        description: "Learn about var, let, const, and scope in JavaScript.",
-                    },
-                ],
-            },
-            {
-                id: "advanced",
-                label: "Basic",
-                rank: 2,
-                topics: [
-                    {
-                        id: "asyncawait",
-                        title: "Async/Await",
-                        duration: "06:08",
-                        src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-                        description: "Handle asynchronous workflows with cleaner syntax.",
-                    },
-                ],
-            },
-            {
-                id: "premium",
-                label: "Premium",
-                rank: 3,
-                topics: [
-                    {
-                        id: "dommanipulation",
-                        title: "DOM Manipulation",
-                        duration: "07:14",
-                        src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-                        description: "Interact with browser elements and update interfaces dynamically.",
-                    },
-                ],
-            },
-        ],
-    },
-];
-
 function DashboardPage({
                            setIsAuthenticated,
                        }: {
@@ -127,7 +28,9 @@ function DashboardPage({
         lastName: "",
     });
 
-    const [activeTab, setActiveTab] = useState<"subscription" | "videos">("subscription",);
+    const [activeTab, setActiveTab] = useState<"subscription" | "videos">(
+        "subscription",
+    );
     const [selectedLanguage, setSelectedLanguage] = useState<string>("java");
     const [selectedTier, setSelectedTier] = useState<string>("basic");
     const [selectedTopic, setSelectedTopic] = useState<string>("inheritance");
@@ -154,15 +57,25 @@ function DashboardPage({
     const [selectedPlan, setSelectedPlan] = useState<any | null>(null);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("paypal");
 
+    const [videoCatalog, setVideoCatalog] = useState<any[]>([]);
+
     useEffect(() => {
-        if (isTokenExpired()) {
-            handleLogout();
-            return;
-        }
-        loadDashboardData();
+        const load = async () => {
+            if (isTokenExpired()) {
+                handleLogout();
+                return;
+            }
+
+            await loadDashboardData();
+        };
+
+        load();
     }, []);
 
     useEffect(() => {
+        if (!selectedLanguageData || selectedLanguageData.tiers === undefined) {
+            return;
+        }
         const currentTier =
             selectedLanguageData.tiers.find((tier) => tier.id === selectedTier) ??
             selectedLanguageData.tiers[0];
@@ -171,7 +84,6 @@ function DashboardPage({
             setSelectedTopic(currentTier.topics[0]?.id ?? "");
         }
     }, [selectedLanguage, selectedTier, selectedTopic]);
-
 
     const loadDashboardData = async () => {
         setLoading(true);
@@ -183,6 +95,7 @@ function DashboardPage({
             }
             await loadSubscriptionData();
             await loadPlans();
+            await loadVideoCatalog();
 
             setSuccessMessage("Successfully loaded dashboard data");
         } catch (err) {
@@ -204,6 +117,15 @@ function DashboardPage({
         }
     };
 
+    const loadVideoCatalog = async () => {
+        try {
+            const videoCatalog = await videoAPI.getVideoCatalog();
+            setVideoCatalog(videoCatalog.data.videoCatalog);
+        } catch (err) {
+            throw new Error("Failed to video catalog");
+        }
+    };
+
     const handleLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
@@ -212,17 +134,19 @@ function DashboardPage({
     };
 
     const selectedLanguageData =
-        videoCatalog.find((language) => language.key === selectedLanguage) ??
-        videoCatalog[0];
+        videoCatalog.length > 0
+            ? videoCatalog.find((language) => language.key === selectedLanguage)
+            : [];
 
     const selectedTierData =
-        selectedLanguageData.tiers.find((tier) => tier.id === selectedTier) ??
-        selectedLanguageData.tiers[0];
+        selectedLanguageData?.tiers == undefined
+            ? []
+            : selectedLanguageData?.tiers?.find((tier) => tier.id === selectedTier);
 
     const selectedTopicData =
-        selectedTierData.topics.find((topic) => topic.id === selectedTopic) ??
-        selectedTierData.topics[0];
-
+        selectedTierData?.topics == undefined
+            ? []
+            : selectedTierData?.topics?.find((topic) => topic.id === selectedTopic);
 
     if (loading) {
         return <div className="dashboard-loading">Loading your dashboard...</div>;
@@ -288,7 +212,10 @@ function DashboardPage({
                             </button>
                             <button
                                 className={`sidebar-tab ${activeTab === "videos" ? "active" : ""}`}
-                                onClick={() => setActiveTab("videos")}
+                                disabled={videoCatalog.length === 0}
+                                onClick={() => {
+                                    setActiveTab("videos")
+                                }}
                             >
                                 Videos
                             </button>
@@ -296,37 +223,38 @@ function DashboardPage({
 
                         {activeTab === "videos" && (
                             <div className="sidebar-submenu">
-                                {videoCatalog.map((language) => (
-                                    <div key={language.key} className="language-group">
-                                        <button
-                                            className={`language-header ${selectedLanguage === language.key ? "active" : ""}`}
-                                            onClick={() => {
-                                                setSelectedLanguage(language.key);
-                                                const firstTier = language.tiers[0];
-                                                setSelectedTier(firstTier.id);
-                                                setSelectedTopic(firstTier.topics[0]?.id ?? "");
-                                            }}
-                                        >
-                                            {language.label}
-                                        </button>
+                                {videoCatalog.length > 0 &&
+                                    videoCatalog.map((language) => (
+                                        <div key={language.key} className="language-group">
+                                            <button
+                                                className={`language-header ${selectedLanguage === language.key ? "active" : ""}`}
+                                                onClick={() => {
+                                                    setSelectedLanguage(language.key);
+                                                    const firstTier = language.tiers[0];
+                                                    setSelectedTier(firstTier.id);
+                                                    setSelectedTopic(firstTier.topics[0]?.id ?? "");
+                                                }}
+                                            >
+                                                {language.label}
+                                            </button>
 
-                                        <div className="tier-list">
-                                            {language.tiers.map((tier) => (
-                                                <button
-                                                    key={`${language.key}-${tier.id}`}
-                                                    className={`tier-tag ${selectedLanguage === language.key && selectedTier === tier.id ? "active" : ""}`}
-                                                    onClick={() => {
-                                                        setSelectedLanguage(language.key);
-                                                        setSelectedTier(tier.id);
-                                                        setSelectedTopic(tier.topics[0]?.id ?? "");
-                                                    }}
-                                                >
-                                                    {tier.label}
-                                                </button>
-                                            ))}
+                                            <div className="tier-list">
+                                                {language.tiers.map((tier) => (
+                                                    <button
+                                                        key={`${language.key}-${tier.id}`}
+                                                        className={`tier-tag ${selectedLanguage === language.key && selectedTier === tier.id ? "active" : ""}`}
+                                                        onClick={() => {
+                                                            setSelectedLanguage(language.key);
+                                                            setSelectedTier(tier.id);
+                                                            setSelectedTopic(tier.topics[0]?.id ?? "");
+                                                        }}
+                                                    >
+                                                        {tier.label}
+                                                    </button>
+                                                ))}
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
                             </div>
                         )}
                     </aside>
@@ -358,65 +286,69 @@ function DashboardPage({
                                     setSelectedPlan={setSelectedPlan}
                                 />
                             </>
+                        ) : !subscription ? (
+                            <section className="video-library-panel subscription-required-message">
+                                <p>Subscribe first to access the video library.</p>
+                            </section>
                         ) : (
-                            !subscription ? (
-                                <section className="video-library-panel subscription-required-message">
-                                    <p>Subscribe first to access the video library.</p>
-                                </section>
-                            ) : (
-                                <section className="video-library-panel">
-                                    <div className="video-library-header">
-                                        <div>
-                                            <p className="eyebrow">Learning path</p>
-                                            <h2>
-                                                {selectedLanguageData.label} · {selectedTierData.label}
-                                            </h2>
-                                        </div>
+                            <section className="video-library-panel">
+                                <div className="video-library-header">
+                                    <div>
+                                        <p className="eyebrow">Learning path</p>
+                                        <h2>
+                                            {selectedLanguageData.label} · {selectedTierData.label}
+                                        </h2>
                                     </div>
+                                </div>
 
-                                    <div className="video-content-layout">
-                                        <div className="topic-list-panel">
-                                            <h3>Topics</h3>
-                                            <div className="topic-list">
-                                                {selectedTierData.topics.map((topic) => (
-                                                    <button
-                                                        key={topic.id}
-                                                        className={`topic-item ${selectedTopic === topic.id ? "active" : ""}`}
-                                                        onClick={() => setSelectedTopic(topic.id)}
-                                                    >
-                                                        <span className="topic-title">{topic.title}</span>
-                                                        <span className="topic-duration">{topic.duration}</span>
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        <div className="video-player-panel">
-                                            <div className="video-player-card">
-                                                <div className="video-meta">
-                                                    <span className="video-type">{selectedTierData.label}</span>
-                                                    <span className="video-topic">{selectedLanguageData.label}</span>
-                                                </div>
-
-                                                <video
-                                                    key={selectedTopicData.id}
-                                                    className="video-player"
-                                                    controls
-                                                    preload="metadata"
-                                                    src={selectedTopicData.src}
+                                <div className="video-content-layout">
+                                    <div className="topic-list-panel">
+                                        <h3>Topics</h3>
+                                        <div className="topic-list">
+                                            {selectedTierData.topics.map((topic) => (
+                                                <button
+                                                    key={topic.id}
+                                                    className={`topic-item ${selectedTopic === topic.id ? "active" : ""}`}
+                                                    onClick={() => setSelectedTopic(topic.id)}
                                                 >
-                                                    Your browser does not support the video tag.
-                                                </video>
+                                                    <span className="topic-title">{topic.title}</span>
+                                                    <span className="topic-duration">
+                                                        {topic.duration}
+                                                    </span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
 
-                                                <div className="video-info">
-                                                    <h3>{selectedTopicData.title}</h3>
-                                                    <p>{selectedTopicData.description}</p>
-                                                </div>
+                                    <div className="video-player-panel">
+                                        <div className="video-player-card">
+                                            <div className="video-meta">
+                                                <span className="video-type">
+                                                  {selectedTierData.label}
+                                                </span>
+                                                <span className="video-topic">
+                                                  {selectedLanguageData.label}
+                                                </span>
+                                            </div>
+
+                                            <video
+                                                key={selectedTopicData.id}
+                                                className="video-player"
+                                                controls
+                                                preload="metadata"
+                                                src={selectedTopicData.src}
+                                            >
+                                                Your browser does not support the video tag.
+                                            </video>
+
+                                            <div className="video-info">
+                                                <h3>{selectedTopicData.title}</h3>
+                                                <p>{selectedTopicData.description}</p>
                                             </div>
                                         </div>
                                     </div>
-                                </section>
-                            )
+                                </div>
+                            </section>
                         )}
                     </main>
                 </div>
