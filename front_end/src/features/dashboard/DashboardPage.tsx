@@ -24,6 +24,7 @@ const videoCatalog = [
             {
                 id: "basic",
                 label: "Free",
+                rank: 1,
                 topics: [
                     {
                         id: "inheritance",
@@ -32,25 +33,12 @@ const videoCatalog = [
                         src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
                         description: "Learn how classes inherit behavior and data in Java.",
                     },
-                    {
-                        id: "classes",
-                        title: "Classes",
-                        duration: "03:45",
-                        src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-                        description: "Understand class structure, constructors, fields, and methods.",
-                    },
-                    {
-                        id: "loops",
-                        title: "Loops",
-                        duration: "05:10",
-                        src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-                        description: "Practice iteration patterns with for and while loops.",
-                    },
                 ],
             },
             {
                 id: "advanced",
                 label: "Basic",
+                rank: 2,
                 topics: [
                     {
                         id: "streams",
@@ -59,25 +47,12 @@ const videoCatalog = [
                         src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
                         description: "Use functional-style data processing to work with collections.",
                     },
-                    {
-                        id: "multithreading",
-                        title: "Multi-threading",
-                        duration: "05:40",
-                        src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-                        description: "Coordinate parallel tasks and manage shared resources safely.",
-                    },
-                    {
-                        id: "designpatterns",
-                        title: "Design Patterns",
-                        duration: "07:05",
-                        src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-                        description: "Apply reusable patterns to build scalable Java systems.",
-                    },
                 ],
             },
             {
                 id: "premium",
                 label: "Premium",
+                rank: 3,
                 topics: [
                     {
                         id: "microservices",
@@ -85,20 +60,6 @@ const videoCatalog = [
                         duration: "08:15",
                         src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
                         description: "Design service boundaries and resilient distributed systems.",
-                    },
-                    {
-                        id: "performance",
-                        title: "Performance Tuning",
-                        duration: "09:02",
-                        src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-                        description: "Profile bottlenecks and optimize Java runtime behavior.",
-                    },
-                    {
-                        id: "cloudintegration",
-                        title: "Cloud Integration",
-                        duration: "07:40",
-                        src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-                        description: "Connect Java applications with cloud APIs and infrastructure.",
                     },
                 ],
             },
@@ -111,6 +72,7 @@ const videoCatalog = [
             {
                 id: "basic",
                 label: "Free",
+                rank: 1,
                 topics: [
                     {
                         id: "variables",
@@ -119,25 +81,12 @@ const videoCatalog = [
                         src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
                         description: "Learn about var, let, const, and scope in JavaScript.",
                     },
-                    {
-                        id: "functions",
-                        title: "Functions",
-                        duration: "04:10",
-                        src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-                        description: "Build reusable logic with declarations and expressions.",
-                    },
-                    {
-                        id: "arrays",
-                        title: "Arrays",
-                        duration: "03:58",
-                        src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-                        description: "Work with list data and array methods effectively.",
-                    },
                 ],
             },
             {
                 id: "advanced",
                 label: "Basic",
+                rank: 2,
                 topics: [
                     {
                         id: "asyncawait",
@@ -146,25 +95,12 @@ const videoCatalog = [
                         src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
                         description: "Handle asynchronous workflows with cleaner syntax.",
                     },
-                    {
-                        id: "closures",
-                        title: "Closures",
-                        duration: "05:32",
-                        src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-                        description: "Master lexical scope and state retention in functions.",
-                    },
-                    {
-                        id: "prototypes",
-                        title: "Prototypes",
-                        duration: "06:25",
-                        src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-                        description: "Understand inheritance chains and object behavior.",
-                    },
                 ],
             },
             {
                 id: "premium",
                 label: "Premium",
+                rank: 3,
                 topics: [
                     {
                         id: "dommanipulation",
@@ -172,20 +108,6 @@ const videoCatalog = [
                         duration: "07:14",
                         src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
                         description: "Interact with browser elements and update interfaces dynamically.",
-                    },
-                    {
-                        id: "stateManagement",
-                        title: "State Management",
-                        duration: "08:00",
-                        src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-                        description: "Build predictable data flows for larger frontend applications.",
-                    },
-                    {
-                        id: "performanceoptimization",
-                        title: "Performance Optimization",
-                        duration: "07:58",
-                        src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-                        description: "Reduce DOM work, improve rendering speed, and optimize bundles.",
                     },
                 ],
             },
@@ -205,9 +127,7 @@ function DashboardPage({
         lastName: "",
     });
 
-    const [activeTab, setActiveTab] = useState<"subscription" | "videos">(
-        "subscription",
-    );
+    const [activeTab, setActiveTab] = useState<"subscription" | "videos">("subscription",);
     const [selectedLanguage, setSelectedLanguage] = useState<string>("java");
     const [selectedTier, setSelectedTier] = useState<string>("basic");
     const [selectedTopic, setSelectedTopic] = useState<string>("inheritance");
@@ -237,9 +157,21 @@ function DashboardPage({
     useEffect(() => {
         if (isTokenExpired()) {
             handleLogout();
+            return;
         }
         loadDashboardData();
     }, []);
+
+    useEffect(() => {
+        const currentTier =
+            selectedLanguageData.tiers.find((tier) => tier.id === selectedTier) ??
+            selectedLanguageData.tiers[0];
+
+        if (!currentTier.topics.some((topic) => topic.id === selectedTopic)) {
+            setSelectedTopic(currentTier.topics[0]?.id ?? "");
+        }
+    }, [selectedLanguage, selectedTier, selectedTopic]);
+
 
     const loadDashboardData = async () => {
         setLoading(true);
@@ -282,22 +214,15 @@ function DashboardPage({
     const selectedLanguageData =
         videoCatalog.find((language) => language.key === selectedLanguage) ??
         videoCatalog[0];
+
     const selectedTierData =
         selectedLanguageData.tiers.find((tier) => tier.id === selectedTier) ??
         selectedLanguageData.tiers[0];
+
     const selectedTopicData =
         selectedTierData.topics.find((topic) => topic.id === selectedTopic) ??
         selectedTierData.topics[0];
 
-    useEffect(() => {
-        const currentTier =
-            selectedLanguageData.tiers.find((tier) => tier.id === selectedTier) ??
-            selectedLanguageData.tiers[0];
-
-        if (!currentTier.topics.some((topic) => topic.id === selectedTopic)) {
-            setSelectedTopic(currentTier.topics[0]?.id ?? "");
-        }
-    }, [selectedLanguage, selectedTier, selectedTopic]);
 
     if (loading) {
         return <div className="dashboard-loading">Loading your dashboard...</div>;
@@ -434,58 +359,64 @@ function DashboardPage({
                                 />
                             </>
                         ) : (
-                            <section className="video-library-panel">
-                                <div className="video-library-header">
-                                    <div>
-                                        <p className="eyebrow">Learning path</p>
-                                        <h2>
-                                            {selectedLanguageData.label} · {selectedTierData.label}
-                                        </h2>
+                            !subscription ? (
+                                <section className="video-library-panel subscription-required-message">
+                                    <p>Subscribe first to access the video library.</p>
+                                </section>
+                            ) : (
+                                <section className="video-library-panel">
+                                    <div className="video-library-header">
+                                        <div>
+                                            <p className="eyebrow">Learning path</p>
+                                            <h2>
+                                                {selectedLanguageData.label} · {selectedTierData.label}
+                                            </h2>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div className="video-content-layout">
-                                    <div className="topic-list-panel">
-                                        <h3>Topics</h3>
-                                        <div className="topic-list">
-                                            {selectedTierData.topics.map((topic) => (
-                                                <button
-                                                    key={topic.id}
-                                                    className={`topic-item ${selectedTopic === topic.id ? "active" : ""}`}
-                                                    onClick={() => setSelectedTopic(topic.id)}
+                                    <div className="video-content-layout">
+                                        <div className="topic-list-panel">
+                                            <h3>Topics</h3>
+                                            <div className="topic-list">
+                                                {selectedTierData.topics.map((topic) => (
+                                                    <button
+                                                        key={topic.id}
+                                                        className={`topic-item ${selectedTopic === topic.id ? "active" : ""}`}
+                                                        onClick={() => setSelectedTopic(topic.id)}
+                                                    >
+                                                        <span className="topic-title">{topic.title}</span>
+                                                        <span className="topic-duration">{topic.duration}</span>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="video-player-panel">
+                                            <div className="video-player-card">
+                                                <div className="video-meta">
+                                                    <span className="video-type">{selectedTierData.label}</span>
+                                                    <span className="video-topic">{selectedLanguageData.label}</span>
+                                                </div>
+
+                                                <video
+                                                    key={selectedTopicData.id}
+                                                    className="video-player"
+                                                    controls
+                                                    preload="metadata"
+                                                    src={selectedTopicData.src}
                                                 >
-                                                    <span className="topic-title">{topic.title}</span>
-                                                    <span className="topic-duration">{topic.duration}</span>
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
+                                                    Your browser does not support the video tag.
+                                                </video>
 
-                                    <div className="video-player-panel">
-                                        <div className="video-player-card">
-                                            <div className="video-meta">
-                                                <span className="video-type">{selectedTierData.label}</span>
-                                                <span className="video-topic">{selectedLanguageData.label}</span>
-                                            </div>
-
-                                            <video
-                                                key={selectedTopicData.id}
-                                                className="video-player"
-                                                controls
-                                                preload="metadata"
-                                                src={selectedTopicData.src}
-                                            >
-                                                Your browser does not support the video tag.
-                                            </video>
-
-                                            <div className="video-info">
-                                                <h3>{selectedTopicData.title}</h3>
-                                                <p>{selectedTopicData.description}</p>
+                                                <div className="video-info">
+                                                    <h3>{selectedTopicData.title}</h3>
+                                                    <p>{selectedTopicData.description}</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </section>
+                                </section>
+                            )
                         )}
                     </main>
                 </div>
