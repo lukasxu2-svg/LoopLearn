@@ -58,4 +58,8 @@ export const planAPI = {
     getPlans: () => api.get(`/plans`),
 };
 
+export const videoAPI = {
+    getVideoCatalog: () => api.get(`/videos`)
+}
+
 export default api;
