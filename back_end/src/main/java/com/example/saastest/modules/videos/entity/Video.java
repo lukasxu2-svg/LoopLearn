@@ -22,6 +22,15 @@ public class Video {
     @Enumerated(EnumType.STRING)
     private LanguageType languageType;
 
+    public Video(Integer rank, String title, String videoPath, LanguageType languageType, String duration, String description) {
+        this.rank = rank;
+        this.title = title;
+        this.videoPath = videoPath;
+        this.description = description;
+        this.duration = duration;
+        this.languageType = languageType;
+    }
+
     public LanguageType getLanguageType() {
         return languageType;
     }
